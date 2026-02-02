@@ -13,13 +13,40 @@ app.config['SECRET_KEY'] = 'my_secret_key'
 
 db = SQLAlchemy(app)
 
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-# login_manager.login_view = 'login'
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
+class Users(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(250), unique = True, nullable = False)
+    created_at = db.Column(db.String(250), nullable = False)
+
+class Projects(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    title = db.Column(db.String(250), nullable = False)
+    description = db.Column(db.Text, nullable = True)
+    status = db.Column(db.String(100), nullbale = False)
+    created_at = db.Column(db.String(250), nullable = False)
+
+class Work_Sessions(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable = False)
+    session_date = db.Column
+    start_time = db.Column
+    end_time = db.Column
+    duration_minutes = db.Column
+    work_descp = db.Column
+    outcome = db.Column
+    created_at = db.column
+
 
 @app.route('/dashboard', methods = ['POST','GET'])
 def dashboard():
