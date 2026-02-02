@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Dashboard</title>
+    </head>
+    <body>
+        <h3>Personal Progress Intelligence</h3>
+        <form action="/dashboard" method="POST">
+            <label for="start_time">Start Time</label>
+            <input type="datetime-local" name="start_time"><br>
+            <label for="end_time">End Time</label>
+            <input type="datetime-local" name="end_time"><br>
+            
+            <label for="output_desired">Output Desired</label>
+            <textarea name="output_desired" cols="10"></textarea>br
+            <label for="output_produced">Output Produced</label>br
+            <textarea name="output_produced" cols="10"></textarea>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
