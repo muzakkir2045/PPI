@@ -50,22 +50,17 @@ class Work_Sessions(db.Model):
 
 @app.route('/dashboard', methods = ['POST','GET'])
 def dashboard():
+    project = request.form.get('project_name')
+    date = request.form.get('date')
+    start_time = request.form.get('start_time')
+    end_time = request.form.get('end_time')
+    inp = request.form.get('output_desired')
+    outcome = request.form.get('output_produced')
 
-    start = request.form.get('start_time')
-    end = request.form.get('end_time')
-    op_desired = request.form.get('output_desired')
-    op_produced = request.form.get('output_produced')
 
-    format_string = "%Y-%m-%dT%H:%M"
-    start = datetime.strptime(start, format_string)
-    end = datetime.strptime(end, format_string)
-
-    if op_desired.lower() == op_produced.lower():
-        message = "Session was useful"
-    else:
-        message = "The session was not that growthful"
-    diff = end - start
-    return f"The session time is {diff} , The Session report is {message}"
+@app.route('/work_sessions')
+def work_sessions():
+    pass
 
 
 @app.route('/output')
