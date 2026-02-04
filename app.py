@@ -4,7 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Date, Time, DateTime
-from datetime import date, time, datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
@@ -39,8 +39,8 @@ class WorkSession(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable = False)
 
     session_date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.Time, nullable=False)
-    end_time = db.Column(db.Time, nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
 
     duration_minutes = db.Column(db.Integer, nullable=False)
     work_description = db.Column(db.Text, nullable=False)
@@ -88,11 +88,42 @@ def work_sessions(id):
 @app.route('/new_session', methods = ['GET','POST'])
 def new_session():
     if request.method == 'POST':
-        pass
+        session_date = datetime.strptime(
+            request.form["session_date"], "%Y-%m-%d"
+        ).date()
+
+        start_t = datetime.strptime(
+            request.form["start_time"], "%H:%M"
+        ).time()
+
+        end_t = datetime.strptime(
+            request.form["end_time"], "%H:%M"
+        ).time()
 
 
+        start_dt = datetime.combine(session_date, start_t)
+        end_dt   = datetime.combine(session_date, end_t)
 
+        if end_dt <= start_dt:
+            end_dt += timedelta(days=1)
 
+        duration_minutes = int(
+            (end_dt - start_dt).total_seconds() / 60
+        )
+        project_session = WorkSession(
+            session_date = session_date,
+            start_time = start_dt,
+            end_time = end_dt,
+            duration_minutes = duration_minutes,
+            work_description = request.form.get('work_description'),
+            outcome = request.form.get('outcome')
+        )
+        db.session.add(project_session)
+        db.session.commit()
+        return redirect('/work_sessions/<int:id>')
+    return render_template('new_project_sessions.html')
+
+        
 with app.app_context():
     db.create_all()
 
