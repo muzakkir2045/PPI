@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <title>Project Sessions</title>
+    </head>
+    <body>
+        <form action="/new_session" method="GET">
+            <button class="new-session-btn" type="submit">Create new session</button>
+        </form>
+        <main>
+            {% if sessions|length > 0 %}
+            <table>
+                <thead>
+                    <th>Session Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration Minutes</th>
+                    <th>Work Description</th>
+                    <th>Outcome</th>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <td>{{ session.session_date }}</td>
+                    <td>{{ session.start_time }}</td>
+                    <td>{{ session.end_time }}</td>
+                    <td>{{ session.duration_minutes }}</td>
+                    <td>{{ session.work_description }}</td>
+                    <td>{{ session.outcome }}</td>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        {% else %}
+            <p>Create a new session</p>
+        {% endif %}
+        </main>
+    </body>
+</html>

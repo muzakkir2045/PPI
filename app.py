@@ -3,7 +3,8 @@ from flask import Flask, render_template, redirect, request, session, abort, url
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from sqlalchemy import Date, Time, DateTime
+from datetime import date, time, datetime
 
 app = Flask(__name__)
 
@@ -13,60 +14,87 @@ app.config['SECRET_KEY'] = 'my_secret_key'
 
 db = SQLAlchemy(app)
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-@app.route('/')
-def home():
-    return render_template('index.html')
+# login_manager = LoginManager()
+# login_manager.init_app(app)
+# login_manager.login_view = 'login'
 
 
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(250), unique = True, nullable = False)
-    created_at = db.Column(db.String(250), nullable = False)
+    created_at = db.Column(db.DateTime, default = datetime.now())
 
 class Projects(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     title = db.Column(db.String(250), nullable = False)
-    description = db.Column(db.Text, nullable = True)
-    status = db.Column(db.String(100), nullbale = False)
-    created_at = db.Column(db.String(250), nullable = False)
+    description = db.Column(db.Text)
+    status = db.Column(db.String(100), default = "active")
+    created_at = db.Column(db.DateTime, default = datetime.now())
 
-class Work_Sessions(db.Model):
+class WorkSession(db.Model):
+    __tablename__ = "work_sessions"
     id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable = False)
-    session_date = db.Column
-    start_time = db.Column
-    end_time = db.Column
-    duration_minutes = db.Column
-    work_descp = db.Column
-    outcome = db.Column
-    created_at = db.column
 
+    session_date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+
+    duration_minutes = db.Column(db.Integer, nullable=False)
+    work_description = db.Column(db.Text, nullable=False)
+    outcome = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime, default=datetime.now())
+
+
+@app.route('/')
+def home():
+    return redirect('/dashboard')
 
 @app.route('/dashboard', methods = ['POST','GET'])
 def dashboard():
-    project = request.form.get('project_name')
-    date = request.form.get('date')
-    start_time = request.form.get('start_time')
-    end_time = request.form.get('end_time')
-    inp = request.form.get('output_desired')
-    outcome = request.form.get('output_produced')
+    projects = Projects.query.all()
+    return render_template('dashboard.html' , projects = projects)
 
 
-@app.route('/work_sessions')
-def work_sessions():
-    pass
+
+@app.route('/new_project', methods = ['GET','POST'])
+def new_project():
+    if request.method == "POST":
+        title = request.form.get('title')
+        description = request.form.get('description','Description Not Added')
+        status = request.form.get('status','active')
 
 
-@app.route('/output')
-def output():
-    return None
+        project = Projects(
+            title = title,
+            description = description,
+            status = status
+        )
+        db.session.add(project)
+        db.session.commit()
+        return redirect('/dashboard')
+    return render_template('new_project.html')
+    
 
+@app.route('/work_sessions/<int:id>')
+def work_sessions(id):
+    sessions = WorkSession.query.filter_by(project_id = id).all()
+    return render_template('project_sessions.html', sessions = sessions)
+
+
+@app.route('/new_session', methods = ['GET','POST'])
+def new_session():
+    if request.method == 'POST':
+        pass
+
+
+
+
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True)
