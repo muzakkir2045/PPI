@@ -1,14 +1,18 @@
 <html>
     <head>
         <title>Project Sessions</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='project_sessions.css') }}">
     </head>
     <body>
-        <form action="/new_session" method="GET">
+        <form action="{{ url_for('new_session', project_id=project_id) }}" method="GET">
             <button class="new-session-btn" type="submit">Create new session</button>
+        </form>
+        <form action="/dashboard">
+            <button class="back-link" type="submit">Back</button>
         </form>
         <main>
             {% if sessions|length > 0 %}
-            <table>
+            <table class="sessions-table">
                 <thead>
                     <th>Session Date</th>
                     <th>Start Time</th>
@@ -17,16 +21,16 @@
                     <th>Work Description</th>
                     <th>Outcome</th>
                 </thead>
+                {% for session in sessions %}
                 <tbody>
-                    {% for session in sessions %}
                     <td>{{ session.session_date }}</td>
                     <td>{{ session.start_time }}</td>
                     <td>{{ session.end_time }}</td>
                     <td>{{ session.duration_minutes }}</td>
                     <td>{{ session.work_description }}</td>
                     <td>{{ session.outcome }}</td>
-                    {% endfor %}
                 </tbody>
+                {% endfor %}
             </table>
             
         {% else %}

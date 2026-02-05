@@ -79,17 +79,17 @@ def new_project():
     return render_template('new_project.html')
     
 
-@app.route('/work_sessions/<int:id>')
-def work_sessions(id):
-    sessions = WorkSession.query.filter_by(project_id = id).all()
-    return render_template('project_sessions.html', sessions = sessions)
+@app.route('/work_sessions/<int:project_id>')
+def work_sessions(project_id):
+    sessions = WorkSession.query.filter_by(project_id = project_id).all()
+    return render_template('project_sessions.html', sessions = sessions, project_id = project_id)
 
 
-@app.route('/new_session', methods = ['GET','POST'])
-def new_session():
+@app.route('/projects/<int:project_id>/new_session', methods = ['GET','POST'])
+def new_session(project_id):
     if request.method == 'POST':
         session_date = datetime.strptime(
-            request.form["session_date"], "%Y-%m-%d"
+            request.form["session-date"], "%Y-%m-%d"
         ).date()
 
         start_t = datetime.strptime(
@@ -111,6 +111,7 @@ def new_session():
             (end_dt - start_dt).total_seconds() / 60
         )
         project_session = WorkSession(
+            project_id = project_id,
             session_date = session_date,
             start_time = start_dt,
             end_time = end_dt,
@@ -120,8 +121,8 @@ def new_session():
         )
         db.session.add(project_session)
         db.session.commit()
-        return redirect('/work_sessions/<int:id>')
-    return render_template('new_project_sessions.html')
+        return redirect(url_for('work_sessions', project_id = project_id))
+    return render_template('new_project_sessions.html', project_id = project_id)
 
         
 with app.app_context():
