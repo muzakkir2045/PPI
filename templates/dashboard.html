@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>
+            Dashboard
+        </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    </head>
+    <body>
+        <main class="projects">
+            {% for project in projects %}
+                <article class="project-card">
+                    <h4 class="project-title">{{ project.title }}</h4>
+                    <p class="project-description">{{ project.description }}</p>
+                    <p class="project-status">{{ project.status }}</p>
+                    <a href="/work_sessions/{{ project.id }}">session</a>
+                    <a href="/view_project">view</a>
+                </article>
+            {% endfor %}
+        </main>
+        <form action="/new_project" method="GET">
+            <button class="new-project-btn" type="submit">Create new project</button>
+        </form>
+    </body>
+</html>

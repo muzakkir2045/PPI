@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <title>Dashboard</title>
+    </head>
+    <body>
+        <h3>Personal Progress Intelligence</h3>
+        <form action="/dashboard" method="POST">
+            <label for="project_name">Project name</label>
+            <input type="text" name="project_name"><br>
+
+            <label for="date">Date</label>
+            <input type="date" name="date">
+
+            <label for="start_time">Start Time</label>
+            <input type="time" name="start_time"><br>
+
+            <label for="end_time">End Time</label>
+            <input type="time" name="end_time"><br>
+            
+            <label for="output_desired">Output Desired</label>
+            <textarea name="output_desired" cols="10"></textarea><br>
+
+            <label for="output_produced">Output Produced</label><br>
+            <textarea name="output_produced" cols="10"></textarea>
+
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

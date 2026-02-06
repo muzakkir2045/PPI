@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>Project Sessions</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='project_sessions.css') }}">
+    </head>
+    <body>
+        <form action="{{ url_for('new_session', project_id=project_id) }}" method="GET">
+            <button class="new-session-btn" type="submit">Create new session</button>
+        </form>
+        <form action="/dashboard">
+            <button class="back-link" type="submit">Back</button>
+        </form>
+
+        <main>
+
+            <div class="summary">
+                <h2>Project Sessions</h2>
+                <p>Total Time Spent on sessions: {{ total_time_spent }} minutes</p>
+                <p>Total sessions: {{ total_sessions }}</p>
+                <p>Average session: {{ avg_session }} minutes</p>
+                <p>Max session: {{ max_session }} minutes</p>
+                <p>Min session: {{ min_session }} minutes</p>
+            </div>
+            {% if sessions|length > 0 %}
+            <table class="sessions-table">
+                <thead>
+                    <th>Session Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration Minutes</th>
+                    <th>Work Description</th>
+                    <th>Outcome</th>
+                </thead>
+                {% for session in sessions %}
+                <tbody>
+                    <td>{{ session.session_date }}</td>
+                    <td>{{ session.start_time }}</td>
+                    <td>{{ session.end_time }}</td>
+                    <td>{{ session.duration_minutes }}</td>
+                    <td>{{ session.work_description }}</td>
+                    <td>{{ session.outcome }}</td>
+                </tbody>
+                {% endfor %}
+            </table>
+            
+        {% else %}
+            <p>Create a new session</p>
+        {% endif %}
+        </main>
+    </body>
+</html>
