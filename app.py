@@ -118,7 +118,6 @@ def work_sessions(project_id):
         min_session = min_session
     )
 
-
 @app.route('/projects/<int:project_id>/new_session', methods = ['GET','POST'])
 def new_session(project_id):
     if request.method == 'POST':
