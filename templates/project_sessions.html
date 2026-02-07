@@ -18,21 +18,29 @@
         <div class="summary">
             <h2>Project Sessions</h2>
             {% if sessions|length >= 3 %}
-                <h3>Summary</h3>
-                <p>You have logged {{total_sessions}} sessions totaling {{ total_time_spent }} minutes</p>
-                <p>Average session Length: {{ avg_session }} minutes</p>
-                <p>Outcome recorded in {{ outcome_exists }} out of {{total_sessions}} sessions</p>
+                <article class="summary">
+                    <h3>Summary</h3>
+                    <p>You have logged {{total_sessions}} sessions totaling {{ total_time_spent }} minutes</p>
+                    <p>Average session Length: {{ avg_session }} minutes</p>
+                    <p>Outcome recorded in {{ outcome_exists }} out of {{total_sessions}} sessions</p>
+                </article>
 
-                <h3>Insights</h3>
-                <p>Effectiveness: {{ insights.effectiveness }}</p>
-                <p>Consistency: {{ insights.reliability }}</p>
+                <article class="insights">
+                    <h3>Insights</h3>
+                    <p>Effectiveness: {{ insights.effectiveness }}</p>
+                    <p>Consistency: {{ insights.reliability }}</p>
+                </article>
 
-                {% if insights.observation %}
-                <p>Observation: {{ insights.observation }}</p>
-                {% endif %}
+                <article class="observation">
+                    {% if insights.observation %}
+                        <p>Observation: {{ insights.observation }}</p>
+                    {% endif %}
+                </article>
 
-                <h2>Recommendation</h2>
-                <p>{{ insights.recommendation }}</p>
+                <article class="recommendation">
+                    <h2>Recommendation</h2>
+                    <p>{{ insights.recommendation }}</p>
+                </article>
 
             {% else %}
                 <p>First log Atleast 3 sessions to get the summary</p>
