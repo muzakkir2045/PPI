@@ -328,6 +328,19 @@ def new_session(project_id):
         return redirect(url_for('work_sessions', project_id = project_id))
     return render_template('new_project_sessions.html', project_id = project_id)
 
+@app.route('/dashboard/view/<int:project_id>')
+def view_project(project_id):
+    project = Projects.query.get(project_id)
+    return render_template('view_project.html',project = project)
+
+@app.route('/dashboard/delete/<int:project_id>')
+def delete_project(project_id):
+    project = Projects.query.get(project_id)
+    db.session.delete(project)
+    db.session.commit()
+    return redirect('/dashboard')
+
+
         
 with app.app_context():
     db.create_all()

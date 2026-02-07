@@ -13,7 +13,8 @@
                     <p class="project-description">{{ project.description }}</p>
                     <p class="project-status">{{ project.status }}</p>
                     <a href="/work_sessions/{{ project.id }}">session</a>
-                    <a href="/view_project">view</a>
+                    <a href="/dashboard/view/{{ project.id }}">view</a>
+                    <a href="/dashboard/delete/{{ project.id }}">delete</a>
                 </article>
             {% endfor %}
         </main>
