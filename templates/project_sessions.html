@@ -20,6 +20,16 @@
                 <p>Average session: {{ avg_session }} minutes</p>
                 <p>Max session: {{ max_session }} minutes</p>
                 <p>Min session: {{ min_session }} minutes</p>
+                <p>Outcome exists for : {{ outcome_exists }} sessions</p>
+                <p>Outcome doesnt exists for : {{ outcome_doesnt_exists }} sessions</p>
+                <p>Time with outcome : {{ time_with_outcome }} minutes</p>
+                <p>Time without outcome : {{ time_without_outcome }} minutes</p>
+                <p>Long sessions with outcome : {{ long_sessions_with_outcome }} sessions</p>
+                <p>Long sessions without outcome : {{ long_sessions_without_outcome }} sessions</p>
+                <p>Short sessions with outcome : {{ short_sessions_with_outcome }} sessions</p>
+                <p>Short sessions without outcome : {{ short_sessions_without_outcome }} sessions</p>
+                <br>
+                <p>Outcome density for long sessions</p>
             </div>
             {% if sessions|length > 0 %}
             <table class="sessions-table">

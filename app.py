@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, request, session, abort, url
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy import Date, Time, DateTime
 from datetime import datetime, timedelta
 
@@ -109,14 +109,142 @@ def work_sessions(project_id):
         WorkSession.project_id == project_id
     ).scalar() or 0
 
+
+    outcome_doesnt_exists = db.session.query(
+        func.count(WorkSession.id)
+    ).filter(
+        WorkSession.project_id == project_id, WorkSession.outcome == ''
+    ).scalar() or 0
+
+    outcome_exists = total_sessions - outcome_doesnt_exists
+
+    time_without_outcome = db.session.query(
+        func.sum(WorkSession.duration_minutes)
+    ).filter(
+        WorkSession.project_id == project_id, 
+        WorkSession.outcome == ''
+    ).scalar() or 0
+
+    time_with_outcome = db.session.query(
+        func.sum(WorkSession.duration_minutes)
+    ).filter(
+        WorkSession.project_id == project_id, 
+        WorkSession.outcome.isnot(None),
+        WorkSession.outcome != ''
+    ).scalar() or 0
+
+
+    long_sessions_with_outcome = (
+        db.session.query(func.count(WorkSession.id))
+        .filter(
+            WorkSession.project_id == project_id,
+            WorkSession.duration_minutes > avg_session,
+            WorkSession.outcome.isnot(None),
+            WorkSession.outcome != ''
+        )
+        .scalar()
+    ) or 0
+
+    long_sessions_without_outcome = (
+        db.session.query(func.count(WorkSession.id))
+        .filter(
+            WorkSession.project_id == project_id,
+            WorkSession.duration_minutes > avg_session,
+            or_(
+                WorkSession.outcome.is_(None),
+                WorkSession.outcome == ''
+            )
+        )
+        .scalar()
+    ) or 0
+
+    short_sessions_with_outcome = (
+        db.session.query(func.count(WorkSession.id))
+        .filter(
+            WorkSession.project_id == project_id,
+            WorkSession.duration_minutes < avg_session,
+            WorkSession.outcome.isnot(None),
+            WorkSession.outcome != ''
+        )
+        .scalar()
+    ) or 0
+
+    short_sessions_without_outcome = (
+        db.session.query(func.count(WorkSession.id))
+        .filter(
+            WorkSession.project_id == project_id,
+            WorkSession.duration_minutes < avg_session,
+            or_(
+                WorkSession.outcome.is_(None),
+                WorkSession.outcome == ''
+            )
+        )
+        .scalar()
+    ) or 0
+
+    total_outcome_long = db.session.query(
+        func.sum(func.length(WorkSession.outcome))
+    ).filter(
+        WorkSession.project_id == project_id,
+        WorkSession.duration_minutes > avg_session,
+        WorkSession.outcome.isnot(None),
+        WorkSession.outcome != ''
+    ).scalar() or 0
+
+    total_duration_long = db.session.query(
+        func.sum(WorkSession.duration_minutes)
+    ).filter(
+        WorkSession.project_id == project_id,
+        WorkSession.duration_minutes > avg_session,
+        WorkSession.outcome.isnot(None),
+        WorkSession.outcome != ''
+    ).scalar() or 0
+
+    outcome_density_long = (
+        total_outcome_long / total_duration_long
+        if total_duration_long > 0 else 0
+    )
+
+
+    total_outcome_short = db.session.query(
+        func.sum(func.length(WorkSession.outcome))
+    ).filter(
+        WorkSession.project_id == project_id,
+        WorkSession.duration_minutes < avg_session,
+        WorkSession.outcome.isnot(None),
+        WorkSession.outcome != ''
+    ).scalar() or 0
+
+    total_duration_short = db.session.query(
+        func.sum(WorkSession.duration_minutes)
+    ).filter(
+        WorkSession.project_id == project_id,
+        WorkSession.duration_minutes < avg_session,
+        WorkSession.outcome.isnot(None),
+        WorkSession.outcome != ''
+    ).scalar() or 0
+
+    outcome_density_short = (
+        total_outcome_short / total_duration_short
+        if total_duration_short > 0 else 0
+    )
+
     return render_template('project_sessions.html',
         sessions = sessions, project_id = project_id,
         total_time_spent = total_minutes,
         total_sessions = total_sessions,
         avg_session = avg_session,
         max_session = max_session,
-        min_session = min_session
-    )
+        min_session = min_session,
+        outcome_exists = outcome_exists,
+        outcome_doesnt_exists = outcome_doesnt_exists,
+        time_with_outcome = time_with_outcome,
+        time_without_outcome = time_without_outcome,
+        long_sessions_with_outcome = long_sessions_with_outcome,
+        long_sessions_without_outcome = long_sessions_without_outcome,
+        short_sessions_with_outcome = short_sessions_with_outcome,
+        short_sessions_without_outcome = short_sessions_without_outcome
+        )
 
 @app.route('/projects/<int:project_id>/new_session', methods = ['GET','POST'])
 def new_session(project_id):
@@ -163,9 +291,4 @@ with app.app_context():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-
 
