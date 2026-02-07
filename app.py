@@ -82,20 +82,21 @@ def new_project():
 
 @app.route('/work_sessions/<int:project_id>')
 def work_sessions(project_id):
-    sessions = WorkSession.query.filter_by(project_id = project_id).all()
-    total_minutes = db.session.query(
-        func.sum(WorkSession.duration_minutes)
-    ).filter(
-        WorkSession.project_id == project_id
-    ).scalar() or 0
 
+    sessions = WorkSession.query.filter_by(project_id = project_id).all()
     total_sessions = db.session.query(
         func.count(WorkSession.id)
     ).filter(
         WorkSession.project_id == project_id
     ).scalar() or 0
 
-    avg_session = (total_minutes//total_sessions)
+    total_minutes = db.session.query(
+        func.sum(WorkSession.duration_minutes)
+    ).filter(
+        WorkSession.project_id == project_id
+    ).scalar() or 0
+
+    avg_session = (total_minutes/total_sessions if total_sessions > 0 else 0)
 
     max_session = db.session.query(
         func.max(WorkSession.duration_minutes)
@@ -229,21 +230,63 @@ def work_sessions(project_id):
         if total_duration_short > 0 else 0
     )
 
+    if outcome_density_short > outcome_density_long:
+        summary_message = "Shorter sessions tend to produce clearer outcomes " \
+        "per minute than longer sessions."
+        
+    elif outcome_density_short < outcome_density_long:
+        summary_message = "Longer sessions appear to generate more outcome" \
+        " value per minute than shorter ones."
+        
+    else:
+        summary_message = "Session length does not significantly affect outcome quality in this project."
+        
+
+    outcome_rate = outcome_exists/total_sessions if total_sessions > 0 else 0
+    if outcome_rate >= 0.7:
+        reliability_message = "Most sessions produce a recorded outcome. Your work is consistent."
+    elif 0.4 <= outcome_rate < 0.7:
+        reliability_message = "Outcomes are produced inconsistently. Some sessions may lack clear closure."
+    else:
+        reliability_message = "Many sessions end without a recorded outcome. This may reduce learning clarity."
+
+    observation_message = None
+
+    if long_sessions_without_outcome > long_sessions_with_outcome:
+        observation_message = "Long sessions often end without a concrete outcome."
+    elif short_sessions_with_outcome >= short_sessions_without_outcome:
+        observation_message = "Short sessions frequently result in clear outcomes."
+
+
+    if outcome_rate < 0.4:
+        recommendation = "Many sessions end without a clear outcome. Make " \
+        "it a habit to explicitly record what was achieved at the end of each session."
+    else:
+        if outcome_density_short > outcome_density_long:
+            recommendation = "Try working in shorter, focused sessions and " \
+            "explicitly closing each session with a written outcome."
+        elif outcome_density_long > outcome_density_short:
+            recommendation = "Longer uninterrupted sessions seem to work " \
+            "better for this project. Protect time for deep work."
+        else:
+            recommendation = "Session length appears flexible. Focus on clearly " \
+            "defining outcomes regardless of session duration."
+
+    insights = {
+        "effectiveness": summary_message,
+        "reliability": reliability_message,
+        "observation": observation_message,
+        "recommendation" : recommendation
+    }
+
+
     return render_template('project_sessions.html',
         sessions = sessions, project_id = project_id,
         total_time_spent = total_minutes,
         total_sessions = total_sessions,
         avg_session = avg_session,
-        max_session = max_session,
-        min_session = min_session,
+        insights = insights,
         outcome_exists = outcome_exists,
-        outcome_doesnt_exists = outcome_doesnt_exists,
-        time_with_outcome = time_with_outcome,
-        time_without_outcome = time_without_outcome,
-        long_sessions_with_outcome = long_sessions_with_outcome,
-        long_sessions_without_outcome = long_sessions_without_outcome,
-        short_sessions_with_outcome = short_sessions_with_outcome,
-        short_sessions_without_outcome = short_sessions_without_outcome
         )
 
 @app.route('/projects/<int:project_id>/new_session', methods = ['GET','POST'])

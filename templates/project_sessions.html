@@ -1,61 +1,70 @@
 <html>
-    <head>
-        <title>Project Sessions</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='project_sessions.css') }}">
-    </head>
-    <body>
-        <form action="{{ url_for('new_session', project_id=project_id) }}" method="GET">
-            <button class="new-session-btn" type="submit">Create new session</button>
-        </form>
-        <form action="/dashboard">
-            <button class="back-link" type="submit">Back</button>
-        </form>
 
-        <main>
+<head>
+    <title>Project Sessions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='project_sessions.css') }}">
+</head>
 
-            <div class="summary">
-                <h2>Project Sessions</h2>
-                <p>Total Time Spent on sessions: {{ total_time_spent }} minutes</p>
-                <p>Total sessions: {{ total_sessions }}</p>
-                <p>Average session: {{ avg_session }} minutes</p>
-                <p>Max session: {{ max_session }} minutes</p>
-                <p>Min session: {{ min_session }} minutes</p>
-                <p>Outcome exists for : {{ outcome_exists }} sessions</p>
-                <p>Outcome doesnt exists for : {{ outcome_doesnt_exists }} sessions</p>
-                <p>Time with outcome : {{ time_with_outcome }} minutes</p>
-                <p>Time without outcome : {{ time_without_outcome }} minutes</p>
-                <p>Long sessions with outcome : {{ long_sessions_with_outcome }} sessions</p>
-                <p>Long sessions without outcome : {{ long_sessions_without_outcome }} sessions</p>
-                <p>Short sessions with outcome : {{ short_sessions_with_outcome }} sessions</p>
-                <p>Short sessions without outcome : {{ short_sessions_without_outcome }} sessions</p>
-                <br>
-                <p>Outcome density for long sessions</p>
-            </div>
-            {% if sessions|length > 0 %}
-            <table class="sessions-table">
-                <thead>
-                    <th>Session Date</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Duration Minutes</th>
-                    <th>Work Description</th>
-                    <th>Outcome</th>
-                </thead>
-                {% for session in sessions %}
-                <tbody>
-                    <td>{{ session.session_date }}</td>
-                    <td>{{ session.start_time }}</td>
-                    <td>{{ session.end_time }}</td>
-                    <td>{{ session.duration_minutes }}</td>
-                    <td>{{ session.work_description }}</td>
-                    <td>{{ session.outcome }}</td>
-                </tbody>
-                {% endfor %}
-            </table>
-            
+<body>
+    <form action="{{ url_for('new_session', project_id=project_id) }}" method="GET">
+        <button class="new-session-btn" type="submit">Create new session</button>
+    </form>
+    <form action="/dashboard">
+        <button class="back-link" type="submit">Back</button>
+    </form>
+
+    <main>
+
+        <div class="summary">
+            <h2>Project Sessions</h2>
+            {% if sessions|length >= 3 %}
+                <h3>Summary</h3>
+                <p>You have logged {{total_sessions}} sessions totaling {{ total_time_spent }} minutes</p>
+                <p>Average session Length: {{ avg_session }} minutes</p>
+                <p>Outcome recorded in {{ outcome_exists }} out of {{total_sessions}} sessions</p>
+
+                <h3>Insights</h3>
+                <p>Effectiveness: {{ insights.effectiveness }}</p>
+                <p>Consistency: {{ insights.reliability }}</p>
+
+                {% if insights.observation %}
+                <p>Observation: {{ insights.observation }}</p>
+                {% endif %}
+
+                <h2>Recommendation</h2>
+                <p>{{ insights.recommendation }}</p>
+
+            {% else %}
+                <p>First log Atleast 3 sessions to get the summary</p>
+            {% endif %}
+            <br>
+        </div>
+        {% if sessions|length > 0 %}
+        <table class="sessions-table">
+            <thead>
+                <th>Session Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration Minutes</th>
+                <th>Work Description</th>
+                <th>Outcome</th>
+            </thead>
+            {% for session in sessions %}
+            <tbody>
+                <td>{{ session.session_date }}</td>
+                <td>{{ session.start_time }}</td>
+                <td>{{ session.end_time }}</td>
+                <td>{{ session.duration_minutes }}</td>
+                <td>{{ session.work_description }}</td>
+                <td>{{ session.outcome }}</td>
+            </tbody>
+            {% endfor %}
+        </table>
+
         {% else %}
             <p>Create a new session</p>
         {% endif %}
-        </main>
-    </body>
+    </main>
+</body>
+
 </html>
