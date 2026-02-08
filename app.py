@@ -229,20 +229,19 @@ def work_sessions(project_id):
         total_outcome_short / total_duration_short
         if total_duration_short > 0 else 0
     )
+    
+    # 1. Effectiveness / Density comparison (with buffer)
+    density_diff = outcome_density_short - outcome_density_long
 
-    if outcome_density_short > outcome_density_long:
-        summary_message = "Shorter sessions tend to produce clearer outcomes " \
-        "per minute than longer sessions."
-        
-    elif outcome_density_short < outcome_density_long:
-        summary_message = "Longer sessions appear to generate more outcome" \
-        " value per minute than shorter ones."
-        
+    if density_diff > 0.08:
+        summary_message = "Shorter sessions tend to produce clearer outcomes per minute than longer sessions."
+    elif density_diff < -0.08:
+        summary_message = "Longer sessions appear to generate more outcome value per minute than shorter ones."
     else:
         summary_message = "Session length does not significantly affect outcome quality in this project."
-        
 
-    outcome_rate = outcome_exists/total_sessions if total_sessions > 0 else 0
+    # 2. Reliability / Outcome rate (unchanged — good as is)
+    outcome_rate = outcome_exists / total_sessions if total_sessions > 0 else 0
     if outcome_rate >= 0.7:
         reliability_message = "Most sessions produce a recorded outcome. Your work is consistent."
     elif 0.4 <= outcome_rate < 0.7:
@@ -250,27 +249,33 @@ def work_sessions(project_id):
     else:
         reliability_message = "Many sessions end without a recorded outcome. This may reduce learning clarity."
 
+    # 3. Observation — keep only ONE (strongest failure first)
     observation_message = None
 
-    if long_sessions_without_outcome > long_sessions_with_outcome:
+    long_fail_diff = long_sessions_without_outcome - long_sessions_with_outcome
+    short_success_diff = short_sessions_with_outcome - short_sessions_without_outcome
+
+    if long_fail_diff > 1.5 or long_fail_diff > short_success_diff:
         observation_message = "Long sessions often end without a concrete outcome."
-    elif short_sessions_with_outcome >= short_sessions_without_outcome:
+    elif short_success_diff > 1.5:
         observation_message = "Short sessions frequently result in clear outcomes."
 
+    # 4. Recommendation — one final message, with soft override for low rate
+    recommendation = ""
 
     if outcome_rate < 0.4:
-        recommendation = "Many sessions end without a clear outcome. Make " \
-        "it a habit to explicitly record what was achieved at the end of each session."
+        recommendation = "Many sessions end without a clear outcome. Make it a habit to explicitly record what was achieved at the end of each session."
+        # Optional soft add-on if short is clearly better even when rate is low
+        if density_diff > 0.3:
+            recommendation += " Shorter sessions already show clearer results when you do close them."
     else:
-        if outcome_density_short > outcome_density_long:
-            recommendation = "Try working in shorter, focused sessions and " \
-            "explicitly closing each session with a written outcome."
-        elif outcome_density_long > outcome_density_short:
-            recommendation = "Longer uninterrupted sessions seem to work " \
-            "better for this project. Protect time for deep work."
+        # Normal density-based recommendation
+        if density_diff > 0.08:
+            recommendation = "Try working in shorter, focused sessions and explicitly closing each session with a written outcome."
+        elif density_diff < -0.08:
+            recommendation = "Longer uninterrupted sessions seem to work better for this project. Protect time for deep work."
         else:
-            recommendation = "Session length appears flexible. Focus on clearly " \
-            "defining outcomes regardless of session duration."
+            recommendation = "Session length appears flexible. Focus on clearly defining outcomes regardless of session duration."
 
     insights = {
         "effectiveness": summary_message,
@@ -279,6 +284,9 @@ def work_sessions(project_id):
         "recommendation" : recommendation
     }
 
+    print("Density short:", outcome_density_short)
+    print("Density long:", outcome_density_long)
+    print("Difference:", outcome_density_short - outcome_density_long)
 
     return render_template('project_sessions.html',
         sessions = sessions, project_id = project_id,

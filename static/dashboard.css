@@ -13,8 +13,10 @@ body {
 .projects {
     padding: 40px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, minmax(280px, 1fr));
     gap: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 /* Project card */
@@ -167,3 +169,16 @@ form {
     }
 }
 
+/* 3 columns on medium-large screens (e.g., small laptops, large tablets) */
+@media (max-width: 1200px) {
+    .projects {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 2 columns on medium screens (e.g., tablets in landscape mode) */
+@media (max-width: 850px) {
+    .projects {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
