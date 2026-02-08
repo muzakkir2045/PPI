@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, or_
 from sqlalchemy import Date, Time, DateTime
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 app = Flask(__name__)
 
@@ -335,6 +335,7 @@ def view_project(project_id):
 
 @app.route('/dashboard/delete/<int:project_id>')
 def delete_project(project_id):
+    WorkSession.query.filter_by(project_id=project_id).delete()
     project = Projects.query.get(project_id)
     db.session.delete(project)
     db.session.commit()
@@ -352,7 +353,7 @@ def edit_project(project_id):
         db.session.commit()
         return redirect('/dashboard')
     return render_template('edit_project.html', project = project)
-        
+
 with app.app_context():
     db.create_all()
 
