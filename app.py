@@ -65,7 +65,7 @@ def dashboard():
 def new_project():
     if request.method == "POST":
         title = request.form.get('title')
-        description = request.form.get('description','Description Not Added')
+        description = request.form.get('description','No Description')
         status = request.form.get('status','active')
 
 
@@ -341,6 +341,17 @@ def delete_project(project_id):
     return redirect('/dashboard')
 
 
+@app.route('/dashboard/edit/<int:project_id>',methods = ['GET','POST'])
+def edit_project(project_id):
+    project = Projects.query.get_or_404(project_id)
+    if request.method == "POST":
+        project.title = request.form.get('title')
+        project.description = request.form.get('description','No Description')
+        project.status = request.form.get('status','active')
+
+        db.session.commit()
+        return redirect('/dashboard')
+    return render_template('edit_project.html', project = project)
         
 with app.app_context():
     db.create_all()

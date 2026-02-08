@@ -1,0 +1,94 @@
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f8;
+    color: #1f2933;
+    min-height: 100vh;
+}
+
+/* Layout */
+.form-container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 24px;
+}
+
+.form {
+    background: #ffffff;
+    width: 100%;
+    max-width: 640px;
+    padding: 40px 48px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+/* Visual context */
+.form::before {
+    content: "Edit Project";
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 28px;
+    color: #111827;
+}
+
+/* Fields */
+.form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: #6b7280;
+}
+
+.form input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    transition: border-color 0.15s ease;
+}
+
+.form input[type="text"]:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* Submit */
+.form input[type="submit"] {
+    margin-top: 12px;
+    padding: 14px 18px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form input[type="submit"]:hover {
+    background: #000000;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .form {
+        padding: 28px 24px;
+    }
+
+    .form::before {
+        font-size: 18px;
+    }
+}

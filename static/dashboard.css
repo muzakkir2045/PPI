@@ -1,29 +1,169 @@
+* {
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f8;
     margin: 0;
-    padding: 0;
+    background: #f4f6f8;
+    color: #1f2937;
 }
-.projects{
-    margin: 20px;
+
+/* Main projects grid */
+.projects {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
 }
+
+/* Project card */
 .project-card {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
+.project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Title */
 .project-title {
-    margin-top: 0;
-    color: #333;
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
 }
+
+/* Description */
 .project-description {
-    color: #666;
     font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 14px;
+    line-height: 1.4;
 }
+
+/* Status */
 .project-status {
-    font-weight: bold;
-    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2563eb;
+    background: #e0e7ff;
+    width: fit-content;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 16px;
 }
+
+/* Actions row */
+.project-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+
+
+
+/* Base button */
+.project-card a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #e5e7eb;
+    color: #1f2937;
+    width: 100%;
+    white-space: nowrap;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+
+}
+
+.project-card a:hover {
+    background: #d1d5db;
+}
+
+/* Primary action – Sessions */
+.project-card a.sessions-btn {
+    background: #111827;
+    color: #ffffff;
+}
+
+.project-card a.sessions-btn:hover {
+    background: #000000;
+}
+
+/* Secondary actions */
+.project-card a.secondary-btn {
+    background: #e5e7eb;
+}
+
+/* Secondary actions – Details & Edit */
+.project-card a.secondary-btn:hover {
+    background: #d1d5db;
+}
+
+
+/* Delete action */
+.project-card a.delete-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.project-card a.delete-btn:hover {
+    background: #fecaca;
+}
+
+
+/* New project button */
+form {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+}
+
+.new-project-btn {
+    padding: 14px 20px;
+    border-radius: 999px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(37,99,235,0.4);
+}
+
+.new-project-btn:hover {
+    background: #1e40af;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .projects {
+        padding: 20px;
+        grid-template-columns: 1fr;
+    }
+
+
+
+    form {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+

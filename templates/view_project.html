@@ -1,11 +1,12 @@
 <html>
     <head>
         <title>Dashboard</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='view_project.css') }}">
     </head>
     <body>
         <main class="project-container">
-            <h3>{{ project.title }}</h3>
-            <h3>{{ project.description }}</h3>
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-description">{{ project.description }}</p>
             <form action="/dashboard">
                 <button class="back-link" type="submit">Back</button>
             </form>

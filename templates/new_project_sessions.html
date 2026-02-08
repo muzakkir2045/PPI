@@ -1,10 +1,11 @@
 <html>
     <head>
         <title>New work session</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='new_project_sessions.css') }}">
     </head>
     <body>
-        <main>
-            <form action="/projects/{{ project_id }}/new_session" method="POST">
+        <main class="form-container">
+            <form class="form" action="/projects/{{ project_id }}/new_session" method="POST">
             <label for="session-date">Session Date</label>
             <input type="date" name="session-date"><br>
 
