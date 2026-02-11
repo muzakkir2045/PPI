@@ -150,7 +150,7 @@ def insights_analyzer(project_id, db, WorkSession):
     )
     
     # Adaptive buffer: higher (more conservative) on small data, drops to min_buffer as sessions grow
-    min_buffer = 0.08                  # target for large projects
+    min_buffer = 0.04                  # target for large projects
     max_buffer = 0.25                  # conservative for very small projects
     min_sessions_for_full = 12         # after this many sessions, use full sensitivity
 

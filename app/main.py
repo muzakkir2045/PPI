@@ -2,7 +2,7 @@
 from flask import Flask, render_template, redirect, request, session, abort, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from metrics import insights_analyzer
 from models import db, Users, Projects, WorkSession
 import os
@@ -126,8 +126,8 @@ def new_session(project_id):
             start_time = start_dt,
             end_time = end_dt,
             duration_minutes = duration_minutes,
-            work_description = request.form.get('work_description'),
-            outcome = request.form.get('outcome')
+            work_description = request.form.get('work_description').strip(),
+            outcome = request.form.get('outcome').strip()
         )
         db.session.add(project_session)
         db.session.commit()
@@ -212,142 +212,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("home"))
-
-@app.route("/seed-test-data")
-@login_required
-def seed_test_data():
-
-    # Prevent duplicate seed
-    existing = Projects.query.filter_by(
-        title="Deep Work Engine MVP",
-        user_id=current_user.id
-    ).first()
-
-    if existing:
-        return "Seed project already exists."
-
-    project = Projects(
-        title="Deep Work Engine MVP",
-        description="Building and refining core MVP analytics system",
-        status="active",
-        user_id=current_user.id
-    )
-
-    db.session.add(project)
-    db.session.commit()
-
-    sessions_data = [
-        # Day 1
-        {
-            "date": date.today() - timedelta(days=14),
-            "start": (9, 0),
-            "end": (10, 5),
-            "desc": "Worked on dashboard layout improvements",
-            "outcome": "Refactored layout structure and improved spacing consistency."
-        },
-        # Day 2
-        {
-            "date": date.today() - timedelta(days=13),
-            "start": (20, 0),
-            "end": (20, 35),
-            "desc": "Session metrics debugging",
-            "outcome": "Identified circular import issue in metrics layer."
-        },
-        # Day 3
-        {
-            "date": date.today() - timedelta(days=12),
-            "start": (8, 30),
-            "end": (10, 15),
-            "desc": "Improved recommendation logic",
-            "outcome": "Adjusted threshold logic for deep vs shallow work detection. Recommendations now vary properly."
-        },
-        # Day 4
-        {
-            "date": date.today() - timedelta(days=11),
-            "start": (22, 0),
-            "end": (22, 25),
-            "desc": "Minor bug fixes",
-            "outcome": None
-        },
-        # Day 5
-        {
-            "date": date.today() - timedelta(days=10),
-            "start": (9, 15),
-            "end": (11, 0),
-            "desc": "Session insight refinement",
-            "outcome": "Implemented outcome existence ratio and improved analytical output clarity."
-        },
-        # Day 6
-        {
-            "date": date.today() - timedelta(days=8),
-            "start": (18, 0),
-            "end": (19, 10),
-            "desc": "Database restructuring",
-            "outcome": "Moved models into dedicated module and stabilized DB initialization."
-        },
-        # Day 7
-        {
-            "date": date.today() - timedelta(days=6),
-            "start": (7, 45),
-            "end": (8, 20),
-            "desc": "Quick morning planning session",
-            "outcome": "Outlined roadmap for global analytics feature."
-        },
-        # Day 8
-        {
-            "date": date.today() - timedelta(days=4),
-            "start": (21, 0),
-            "end": (22, 45),
-            "desc": "Deep analytics experimentation",
-            "outcome": "Tested cross-project aggregation queries and validated SQL groupings."
-        },
-        # Day 9
-        {
-            "date": date.today() - timedelta(days=2),
-            "start": (10, 0),
-            "end": (11, 30),
-            "desc": "UX adjustments for session view",
-            "outcome": "Improved hierarchy and visual spacing in session metrics section."
-        },
-        # Day 10
-        {
-            "date": date.today() - timedelta(days=1),
-            "start": (19, 30),
-            "end": (20, 5),
-            "desc": "Short review session",
-            "outcome": "Reviewed previous insights and noted pattern of longer productive sessions."
-        },
-    ]
-
-    for s in sessions_data:
-        start_dt = datetime.combine(s["date"], datetime.min.time()) + timedelta(
-            hours=s["start"][0],
-            minutes=s["start"][1]
-        )
-
-        end_dt = datetime.combine(s["date"], datetime.min.time()) + timedelta(
-            hours=s["end"][0],
-            minutes=s["end"][1]
-        )
-
-        duration_minutes = int((end_dt - start_dt).total_seconds() / 60)
-
-        session = WorkSession(
-            user_id=current_user.id,
-            project_id=project.id,
-            session_date=s["date"],
-            start_time=start_dt,
-            end_time=end_dt,
-            duration_minutes=duration_minutes,
-            work_description=s["desc"],
-            outcome=s["outcome"]
-        )
-
-        db.session.add(session)
-
-    db.session.commit()
-
-    return "Realistic seed data created."
 
 
 
