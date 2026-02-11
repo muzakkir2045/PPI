@@ -8,25 +8,29 @@ Dashboard
 {% endblock css %}
 
 {% block content %}
+<main class="projects">
+    {% for project in projects %}
+    <article class="project-card">
+        <h4 class="project-title">{{ project.title }}</h4>
+        <p class="project-description">{{ project.description }}</p>
+        <p class="project-status">{{ project.status }}</p>
 
-<body>
-    <main class="projects">
-        {% for project in projects %}
-        <article class="project-card">
-            <h4 class="project-title">{{ project.title }}</h4>
-            <p class="project-description">{{ project.description }}</p>
-            <p class="project-status">{{ project.status }}</p>
-            <div class="project-actions">
-                <a href="/work_sessions/{{ project.id }}" class="sessions-btn">Sessions</a>
-                <a href="/dashboard/view/{{ project.id }}" class="secondary-btn">Details</a>
-                <a href="/dashboard/edit/{{ project.id }}" class="secondary-btn">Edit</a>
-                <a href="/dashboard/delete/{{ project.id }}" class="delete-btn">Delete</a>
-            </div>
-        </article>
-        {% endfor %}
-    </main>
-    <form action="/new_project" method="GET">
-        <button class="new-project-btn" type="submit">Create new project</button>
-    </form>
+        <div class="project-actions">
 
-    {% endblock content %}
+            <a href="{{ url_for('work_sessions', project_id=project.id) }}" class="sessions-btn">Sessions</a>
+            <a href="{{ url_for('view_project', project_id=project.id) }}" class="secondary-btn">Details</a>
+            <a href="{{ url_for('edit_project', project_id=project.id) }}" class="secondary-btn">Edit</a>
+
+            <form action="{{ url_for('delete_project', project_id=project.id) }}" method="POST">
+                <button type="submit" class="delete-btn">Delete</button>
+            </form>
+        </div>
+
+    </article>
+    {% endfor %}
+</main>
+<form class="new-project-btn-form" action="/new_project" method="GET">
+    <button class="new-project-btn" type="submit">Create new project</button>
+</form>
+
+{% endblock content %}

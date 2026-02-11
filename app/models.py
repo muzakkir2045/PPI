@@ -1,6 +1,5 @@
 
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required,current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, date
 
@@ -9,21 +8,27 @@ db = SQLAlchemy()
 
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(250), unique = True, nullable = False)
+    username = db.Column(db.String(250), unique = True, nullable = False)
+    password = db.Column(db.String(250), nullable = False)
     created_at = db.Column(db.DateTime, default = datetime.now())
 
 class Projects(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     title = db.Column(db.String(250), nullable = False)
     description = db.Column(db.Text)
     status = db.Column(db.String(100), default = "active")
+    sessions = db.relationship(
+        'WorkSession',
+        backref='project',
+        cascade="all, delete-orphan"
+    )
     created_at = db.Column(db.DateTime, default = datetime.now())
 
 class WorkSession(db.Model):
     __tablename__ = "work_sessions"
     id = db.Column(db.Integer, primary_key = True)
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable = False)
 
     session_date = db.Column(db.Date, nullable=False)

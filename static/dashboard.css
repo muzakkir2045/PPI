@@ -72,8 +72,6 @@ body {
 }
 
 
-
-
 /* Base button */
 .project-card a {
     display: block;
@@ -120,19 +118,41 @@ body {
 }
 
 
-/* Delete action */
-.project-card a.delete-btn {
-    background: #fee2e2;
-    color: #b91c1c;
+/* Delete form wrapper */
+.project-actions form {
+    margin: 0;
 }
 
-.project-card a.delete-btn:hover {
+/* Delete button */
+.project-actions .delete-btn {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #fee2e2;
+    color: #b91c1c;
+    transition:
+        background 0.15s ease,
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+/* Hover */
+.project-actions .delete-btn:hover {
     background: #fecaca;
+}
+
+/* Active click feedback */
+.project-actions .delete-btn:active {
+    transform: scale(0.97);
 }
 
 
 /* New project button */
-form {
+.new-project-btn-form {
     position: fixed;
     bottom: 30px;
     right: 30px;
