@@ -19,18 +19,19 @@ app = Flask(
     template_folder="../templates",
     static_folder="../static",
     instance_path=INSTANCE_PATH,
-    instance_relative_config=True
-)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL',
-    'sqlite:///' + os.path.join(BASE_DIR, 'instance/database.db')
-)
+    instance_relative_config=True )
+database_url = os.getenv("DATABASE_URL")
+if not database_url:
+    database_url = "sqlite:///" + os.path.join(BASE_DIR, "instance/database.db")
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 db.init_app(app)
-
+app.debug = False
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -230,4 +231,4 @@ def make_session_permanent():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
