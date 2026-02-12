@@ -15,7 +15,7 @@ def insights_analyzer(project_id, db, WorkSession):
         WorkSession.project_id == project_id
     ).scalar() or 0
 
-    avg_session = (total_minutes/total_sessions if total_sessions > 0 else 0)
+    avg_session = round((total_minutes/total_sessions if total_sessions > 0 else 0), 2)
 
     max_session = db.session.query(
         func.max(WorkSession.duration_minutes)
@@ -149,59 +149,142 @@ def insights_analyzer(project_id, db, WorkSession):
         if total_duration_short > 0 else 0
     )
     
-    # Adaptive buffer: higher (more conservative) on small data, drops to min_buffer as sessions grow
-    min_buffer = 0.04                  # target for large projects
-    max_buffer = 0.25                  # conservative for very small projects
-    min_sessions_for_full = 12         # after this many sessions, use full sensitivity
+    # ============================================================================
+    # COMPLETE INSIGHTS LOGIC - REPLACE FROM "effective_buffer" ONWARDS
+    # ============================================================================
 
+    # Calculate outcome rate
+    outcome_rate = outcome_exists / total_sessions if total_sessions > 0 else 0
+
+    # Calculate variables needed for observation logic
+    long_fail_diff = long_sessions_without_outcome - long_sessions_with_outcome
+    short_fail_diff = short_sessions_without_outcome - short_sessions_with_outcome
+    short_success_diff = short_sessions_with_outcome - short_sessions_without_outcome
+
+    # Calculate outcome completion rates (reliability)
+    short_outcome_rate = (
+        short_sessions_with_outcome / (short_sessions_with_outcome + short_sessions_without_outcome)
+        if (short_sessions_with_outcome + short_sessions_without_outcome) > 0 else 0
+    )
+
+    long_outcome_rate = (
+        long_sessions_with_outcome / (long_sessions_with_outcome + long_sessions_without_outcome)
+        if (long_sessions_with_outcome + long_sessions_without_outcome) > 0 else 0
+    )
+
+    # NEW METRICS: Average outcome quality (not per minute)
+    avg_outcome_length_short = (
+        total_outcome_short / short_sessions_with_outcome
+        if short_sessions_with_outcome > 0 else 0
+    )
+
+    avg_outcome_length_long = (
+        total_outcome_long / long_sessions_with_outcome
+        if long_sessions_with_outcome > 0 else 0
+    )
+
+    # Combined effectiveness: quality × reliability
+    short_effectiveness = avg_outcome_length_short * short_outcome_rate
+    long_effectiveness = avg_outcome_length_long * long_outcome_rate
+
+    # Calculate differences
+    quality_diff = avg_outcome_length_short - avg_outcome_length_long
+    reliability_diff = short_outcome_rate - long_outcome_rate
+    effectiveness_diff = short_effectiveness - long_effectiveness
+
+    # Adaptive buffer
+    min_buffer = 0.03
+    max_buffer = 0.20
+    min_sessions_for_full = 12
     effective_buffer = max_buffer - (max_buffer - min_buffer) * min(1.0, total_sessions / min_sessions_for_full)
 
-    # 1. Effectiveness / Density comparison (now using adaptive buffer)
-    density_diff = outcome_density_short - outcome_density_long
+    # Thresholds
+    quality_buffer = 15  # characters difference
+    effectiveness_buffer = effective_buffer * 100  # scaled for effectiveness
 
-    if density_diff > effective_buffer:
-        summary_message = "Shorter sessions tend to produce clearer outcomes per minute than longer sessions."
-    elif density_diff < -effective_buffer:
-        summary_message = "Longer sessions appear to generate more outcome value per minute than shorter ones."
+    # --- EFFECTIVENESS MESSAGE ---
+    if total_sessions < 3:
+        summary_message = "Not enough data yet to identify patterns in session effectiveness."
+    elif (quality_diff < -quality_buffer and long_outcome_rate >= short_outcome_rate):
+        summary_message = "Longer sessions produce more detailed outcomes and maintain high completion rates."
+    elif (quality_diff > quality_buffer and short_outcome_rate >= long_outcome_rate):
+        summary_message = "Shorter sessions produce more detailed outcomes and maintain high completion rates."
+    elif abs(quality_diff) < quality_buffer and reliability_diff > 0.2:
+        summary_message = "Shorter sessions are more reliable—you complete them more consistently."
+    elif abs(quality_diff) < quality_buffer and reliability_diff < -0.2:
+        summary_message = "Longer sessions are more reliable—you complete them more consistently."
+    elif quality_diff < -quality_buffer and short_outcome_rate > long_outcome_rate:
+        summary_message = "Longer sessions produce richer outcomes, but shorter sessions complete more reliably."
+    elif quality_diff > quality_buffer and long_outcome_rate > short_outcome_rate:
+        summary_message = "Shorter sessions produce richer outcomes, but longer sessions complete more reliably."
     else:
         summary_message = "Session length does not significantly affect outcome quality in this project."
 
-    # 2. Reliability / Outcome rate (unchanged — good as is)
-    outcome_rate = outcome_exists / total_sessions if total_sessions > 0 else 0
-    if outcome_rate >= 0.7:
-        reliability_message = "Most sessions produce a recorded outcome. Your work is consistent."
-    elif 0.4 <= outcome_rate < 0.7:
-        reliability_message = "Outcomes are produced inconsistently. Some sessions may lack clear closure."
+    # --- RELIABILITY MESSAGE ---
+    if total_sessions < 3:
+        reliability_message = "Track a few more sessions to establish reliability patterns."
+    elif outcome_rate >= 0.8:
+        reliability_message = "Excellent consistency—nearly all sessions produce recorded outcomes."
+    elif outcome_rate >= 0.7:
+        reliability_message = "Good consistency—most sessions end with clear outcomes."
+    elif outcome_rate >= 0.5:
+        reliability_message = "Moderate consistency—about half of sessions end with documented outcomes."
+    elif outcome_rate >= 0.3:
+        reliability_message = "Low consistency—many sessions end without recorded outcomes, making progress harder to track."
     else:
-        reliability_message = "Many sessions end without a recorded outcome. This may reduce learning clarity."
+        reliability_message = "Very low consistency—most sessions lack outcome records, which limits learning and momentum."
 
-    # 3. Observation — keep only ONE (strongest failure first)
+    # --- OBSERVATION MESSAGE ---
     observation_message = None
 
-    long_fail_diff = long_sessions_without_outcome - long_sessions_with_outcome
-    short_success_diff = short_sessions_with_outcome - short_sessions_without_outcome
+    if total_sessions < 3:
+        observation_message = None
+    elif long_fail_diff >= 2 and long_sessions_without_outcome > long_sessions_with_outcome:
+        observation_message = "Long sessions frequently end without concrete outcomes—consider breaking them into smaller chunks."
+    elif short_fail_diff >= 2 and short_sessions_without_outcome > short_sessions_with_outcome:
+        observation_message = "Short sessions often lack closure—you may need more time to reach clear stopping points."
+    elif short_success_diff >= 2 and short_outcome_rate > 0.7:
+        observation_message = "Short sessions consistently produce clear outcomes—this rhythm works well for you."
+    elif long_outcome_rate > 0.8 and long_sessions_with_outcome >= 2:
+        observation_message = "Extended focus sessions are highly productive when you commit to them fully."
+    elif outcome_rate < 0.4:
+        observation_message = "Sessions often end abruptly without summary—this makes it harder to build momentum between work periods."
 
-    if long_fail_diff > 1.5 or long_fail_diff > short_success_diff:
-        observation_message = "Long sessions often end without a concrete outcome."
-    elif short_success_diff > 1.5:
-        observation_message = "Short sessions frequently result in clear outcomes."
-
-    # 4. Recommendation — one final message, with soft override for low rate
+    # --- RECOMMENDATION ---
     recommendation = ""
 
-    if outcome_rate < 0.4:
-        recommendation = "Many sessions end without a clear outcome. Make it a habit to explicitly record what was achieved at the end of each session."
-        # Optional soft add-on if short is clearly better even when rate is low
-        if density_diff > 0.3:
-            recommendation += " Shorter sessions already show clearer results when you do close them."
-    else:
-        # Normal density-based recommendation (using the same adaptive buffer)
-        if density_diff > effective_buffer:
-            recommendation = "Try working in shorter, focused sessions and explicitly closing each session with a written outcome."
-        elif density_diff < -effective_buffer:
-            recommendation = "Longer uninterrupted sessions seem to work better for this project. Protect time for deep work."
+    if total_sessions < 3:
+        recommendation = "Continue tracking sessions. After 5-10 sessions, clearer patterns will emerge to guide your workflow."
+    elif effectiveness_diff < -effectiveness_buffer and long_outcome_rate >= 0.7:
+        recommendation = "Your data strongly favors longer, focused sessions. Schedule 90-120 minute blocks of uninterrupted deep work when possible."
+    elif effectiveness_diff > effectiveness_buffer and short_outcome_rate >= 0.7:
+        recommendation = "Your data strongly favors shorter, focused sessions. Aim for 30-60 minute blocks with clear outcomes rather than marathon sessions."
+    elif outcome_rate < 0.3:
+        recommendation = "Start simple: at the end of EVERY session, write one sentence about what you accomplished. This single habit will transform your productivity tracking."
+    elif outcome_rate < 0.5:
+        if short_outcome_rate > long_outcome_rate + 0.2:
+            recommendation = "You close short sessions more reliably. Try working in focused 30-45 minute blocks with mandatory outcome notes."
         else:
-            recommendation = "Session length appears flexible. Focus on clearly defining outcomes regardless of session duration."
+            recommendation = "Build the habit of ending every session with a brief outcome summary—even if it's just 'explored X, blocked by Y'."
+    elif long_fail_diff >= 2:
+        recommendation = "Long sessions often lose focus. Try the Pomodoro technique: work 25-50 minutes, document outcomes, then decide whether to continue or stop."
+    elif short_fail_diff >= 2:
+        recommendation = "Short sessions may be too brief to reach meaningful stopping points. Try extending to 45-60 minutes with a clear mini-goal."
+    elif outcome_rate >= 0.8 and abs(quality_diff) < quality_buffer / 2:
+        recommendation = "Your session discipline is excellent. Focus on the work itself—your tracking habits are solid."
+    else:
+        if long_effectiveness > short_effectiveness * 1.1:
+            recommendation = "Longer sessions tend to work better for you. Consider protecting 90+ minute blocks for deep, focused work."
+        elif short_effectiveness > long_effectiveness * 1.1:
+            recommendation = "Shorter sessions appear more productive. Try working in focused 45-60 minute sprints."
+        elif avg_outcome_length_long > avg_outcome_length_short + 5:
+            recommendation = "Longer sessions produce slightly more detailed outcomes. Give yourself time for deep work when possible."
+        elif avg_outcome_length_short > avg_outcome_length_long + 5:
+            recommendation = "Shorter sessions produce slightly more detailed outcomes. Focused sprints seem to work well for you."
+        else:
+            recommendation = "Session length appears flexible for your workflow. Prioritize clear outcome documentation regardless of duration."
+
+    # Then continue with the rest of the logic...
 
     insights = {
         "effectiveness": summary_message,

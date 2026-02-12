@@ -121,6 +121,7 @@ def new_session(project_id):
             (end_dt - start_dt).total_seconds() / 60
         )
         project_session = WorkSession(
+            user_id=current_user.id,
             project_id = project.id,
             session_date = session_date,
             start_time = start_dt,
