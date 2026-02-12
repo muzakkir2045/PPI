@@ -3,8 +3,8 @@ from flask import Flask, render_template, redirect, request, session, url_for, a
 from flask_login import LoginManager, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
-from metrics import insights_analyzer
-from models import db, Users, Projects, WorkSession
+from app.metrics import insights_analyzer
+from app.models import db, Users, Projects, WorkSession
 from dotenv import load_dotenv
 import os
 
