@@ -3,8 +3,8 @@ from flask import Flask, render_template, redirect, request, session, url_for, a
 from flask_login import LoginManager, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
-from app.metrics import insights_analyzer
-from app.models import db, Users, Projects, WorkSession
+from metrics import insights_analyzer
+from models import db, Users, Projects, WorkSession
 from dotenv import load_dotenv
 import os
 
@@ -44,8 +44,8 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 @app.route('/')
-def home():
-    return redirect('/register')
+def landing():
+    return render_template('landing.html')
 
 @app.route('/dashboard', methods = ['POST','GET'])
 @login_required
@@ -80,6 +80,7 @@ def work_sessions(project_id):
         user_id=current_user.id
     ).first_or_404()
 
+
     ( 
         sessions ,
         project_id, 
@@ -90,6 +91,7 @@ def work_sessions(project_id):
         outcome_exists ) = insights_analyzer(project.id, db, WorkSession) 
 
     return render_template('project_sessions.html',
+        title = project.title,
         sessions = sessions, project_id = project.id,
         total_time_spent = total_minutes,
         total_sessions = total_sessions,
@@ -223,7 +225,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("home"))
+    return redirect(url_for("landing"))
 
 @app.before_request
 def make_session_permanent():

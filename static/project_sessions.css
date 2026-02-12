@@ -12,6 +12,12 @@ body {
     line-height: 1.6;
 }
 
+.project-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
 /* ---------- Buttons (top actions) ---------- */
 form {
     display: inline-block;
@@ -171,6 +177,9 @@ p {
     body {
         padding: 20px;
     }
+    .project-title {
+        font-size: 24px;
+    }
 
     .sessions-table {
         display: block;
@@ -183,6 +192,9 @@ p {
     main {
         grid-template-columns: 1fr;
     }
+    .project-title {
+        font-size: 24px;
+    }
 
     .sessions-table {
         margin-top: 32px;
@@ -191,6 +203,9 @@ p {
 @media (max-width: 1200px) {
     main {
         grid-template-columns: 1fr;
+    }
+    .project-title {
+        font-size: 24px;
     }
 
     .sessions-table {
