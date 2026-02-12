@@ -1,9 +1,17 @@
 
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Register</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
     </head>
     <body>
+        <main class="form-container">
+
+        <h1 class="sign-up-header">Register</h1>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
         <form class="register-form" action="/register" method="POST">
             <label for="username">Username</label>
             <input type="text" name="username"><br>
@@ -11,5 +19,11 @@
             <input type="password" name="password"><br>
             <input class="register-btn" type="submit" value="sign up">
         </form>
+        <div class="actions">
+            <p>Already have an Account?</p>
+            <a href="/login">Login</a>
+        </div>
+        
+        </main>
     </body>
 </html>

@@ -1,9 +1,19 @@
-
 <html>
-    <head>
-        <title>Login</title>
-    </head>
-    <body>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+
+<body>
+    <main class="form-container">
+        <h1 class="login-header">Login</h1>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+
         <form class="login-form" action="/login" method="POST">
             <label for="username">Username</label>
             <input type="text" name="username"><br>
@@ -11,5 +21,11 @@
             <input type="password" name="password"><br>
             <input class="login-btn" type="submit" value="Login">
         </form>
-    </body>
+        <div class="actions">
+            <p>Dont have an account? </p>
+            <a href="/register">Create now</a>
+        </div>
+    </main>
+</body>
+
 </html>
