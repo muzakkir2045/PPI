@@ -13,9 +13,26 @@
                 <label for="description">Description</label>
                 <input type="text" name="description" value="{{ project.description }}">
                 <br>
-                <label for="status">Status</label>
-                <input type="text" name="status" value="{{ project.status }}">
-                <br>
+                <label class="group-label">Status</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="status" value="Active"
+                                {% if project.status == "Active" %}checked{% endif %}>
+                            Active
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio" name="status" value="Completed"
+                                {% if project.status == "Completed" %}checked{% endif %}>
+                            Completed
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio" name="status" value="Stalled"
+                                {% if project.status == "Stalled" %}checked{% endif %}>
+                            Stalled
+                        </label>
+                    </div>
                 <input type="submit" value="Update Project">
             </form>
         </main>
