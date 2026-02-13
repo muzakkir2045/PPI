@@ -34,6 +34,9 @@ if database_url.startswith("postgresql://") and "sslmode" not in database_url:
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+}
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 db.init_app(app)
