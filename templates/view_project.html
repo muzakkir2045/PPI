@@ -1,10 +1,12 @@
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='view_project.css') }}">
-    </head>
-    <body>
+{% extends 'base.html' %}
+
+{% block title %}
+Project
+{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='view_project.css') }}">
+{% endblock css %}
+{% block content %}
         <main class="project-container">
             <h3 class="project-title">{{ project.title }}</h3>
             <p class="project-description">{{ project.description }}</p>
@@ -12,5 +14,4 @@
                 <button class="back-link" type="submit">Back</button>
             </form>
         </main>
-    </body>
-</html>
+{% endblock %}

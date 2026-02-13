@@ -473,11 +473,22 @@ p {
 
 /* Footer */
 footer {
-    padding: 2rem 0;
-    background: #f7fafc;
-    border-top: 1px solid #e2e8f0;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 40px 20px;
     text-align: center;
 }
+
+.early-access-note {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 12px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
 
 footer p {
     color: #718096;

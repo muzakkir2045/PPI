@@ -1,10 +1,13 @@
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Project</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='new_project.css') }}">
-    </head>
-    <body>
+
+{% extends 'base.html' %}
+
+{% block title %}
+New project
+{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='new_project.css') }}">
+{% endblock css %}
+{% block content %}
         <main class="form-container">
             <form class="form" action="/new_project" method = "POST">
                 <label for="title">Title</label>
@@ -16,5 +19,4 @@
                 <input type="submit" value="Create Project">
             </form>
         </main>
-    </body>
-</html>
+{% endblock content %}

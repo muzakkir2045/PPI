@@ -5,7 +5,7 @@
 
 body {
     margin: 0;
-    padding: 32px;
+    padding: 0;
     font-family: system-ui, apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: #f6f7f9;
     color: #1f2933;
@@ -13,6 +13,7 @@ body {
 }
 
 .project-title {
+    padding-left: 32px;
     font-size: 28px;
     font-weight: 700;
     margin-bottom: 8px;
@@ -20,6 +21,8 @@ body {
 
 /* ---------- Buttons (top actions) ---------- */
 form {
+    padding-top: 16px; 
+    padding-left: 32px;
     display: inline-block;
     margin-right: 12px;
 }
@@ -54,11 +57,14 @@ button {
 
 /* ---------- Main layout ---------- */
 main {
+    padding-top: 32px; 
     display: grid;
-    grid-template-columns: 520px 1fr;
-    gap: 40px;
-    max-width: 1600px;
+    grid-template-columns: 450px 1fr;
+    gap: 32px;
+    max-width: 1700px;
     margin: 28px auto;
+    padding-left: 32px;
+    padding-right: 32px;
     align-items: start;
 }
 

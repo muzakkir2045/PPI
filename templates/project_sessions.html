@@ -1,81 +1,81 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Project Sessions</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='project_sessions.css') }}">
-</head>
+{% block title %}
+Project Sessions
+{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='project_sessions.css') }}">
+{% endblock css %}
+{% block content %}
+<form action="{{ url_for('new_session', project_id=project_id) }}" method="GET">
+    <button class="new-session-btn" type="submit">Create new session</button>
+</form>
+<form action="/dashboard">
+    <button class="back-link" type="submit">Back</button>
+</form>
 
-<body>
-    <form action="{{ url_for('new_session', project_id=project_id) }}" method="GET">
-        <button class="new-session-btn" type="submit">Create new session</button>
-    </form>
-    <form action="/dashboard">
-        <button class="back-link" type="submit">Back</button>
-    </form>
+<h2 class="project-title">{{ title }}</h2>
 
-    <h2 class="project-title">{{ title }}</h2>
+<main>
 
-    <main>
+    <div class="summary">
+        <h2>Project Sessions</h2>
+        {% if sessions|length >= 3 %}
+        <article class="summary">
+            <h3>Summary</h3>
+            <p>You have logged {{total_sessions}} sessions totaling {{ total_time_spent }} minutes</p>
+            <p>Average session Length: {{ avg_session }} minutes</p>
+            <p>Outcome recorded in {{ outcome_exists }} out of {{total_sessions}} sessions</p>
+        </article>
 
-        <div class="summary">
-            <h2>Project Sessions</h2>
-            {% if sessions|length >= 3 %}
-                <article class="summary">
-                    <h3>Summary</h3>
-                    <p>You have logged {{total_sessions}} sessions totaling {{ total_time_spent }} minutes</p>
-                    <p>Average session Length: {{ avg_session }} minutes</p>
-                    <p>Outcome recorded in {{ outcome_exists }} out of {{total_sessions}} sessions</p>
-                </article>
+        <article class="insights">
+            <h3>Insights</h3>
+            <p>Effectiveness: {{ insights.effectiveness }}</p>
+            <p>Consistency: {{ insights.reliability }}</p>
+        </article>
 
-                <article class="insights">
-                    <h3>Insights</h3>
-                    <p>Effectiveness: {{ insights.effectiveness }}</p>
-                    <p>Consistency: {{ insights.reliability }}</p>
-                </article>
-
-                <article class="observation">
-                    {% if insights.observation %}
-                        <p>Observation: {{ insights.observation }}</p>
-                    {% endif %}
-                </article>
-
-                <article class="recommendation">
-                    <h2>Recommendation</h2>
-                    <p>{{ insights.recommendation }}</p>
-                </article>
-
-            {% else %}
-                <p>First log Atleast 3 sessions to get the summary</p>
+        <article class="observation">
+            {% if insights.observation %}
+            <p>Observation: {{ insights.observation }}</p>
             {% endif %}
-            <br>
-        </div>
-        {% if sessions|length > 0 %}
-        <table class="sessions-table">
-            <thead>
-                <th>Session Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Duration Minutes</th>
-                <th>Work Description</th>
-                <th>Outcome</th>
-            </thead>
-            {% for session in sessions %}
-            <tbody>
-                <td>{{ session.session_date }}</td>
-                <td>{{ session.start_time }}</td>
-                <td>{{ session.end_time }}</td>
-                <td>{{ session.duration_minutes }}</td>
-                <td>{{ session.work_description }}</td>
-                <td>{{ session.outcome }}</td>
-            </tbody>
-            {% endfor %}
-        </table>
+        </article>
+
+        <article class="recommendation">
+            <h2>Recommendation</h2>
+            <p>{{ insights.recommendation }}</p>
+        </article>
 
         {% else %}
-            <p>Create a new session</p>
+        <p>First log Atleast 3 sessions to get the summary</p>
         {% endif %}
-    </main>
-</body>
+        <br>
+    </div>
+    {% if sessions|length > 0 %}
+    <table class="sessions-table">
+        <thead>
+            <th>Session Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Duration Minutes</th>
+            <th>Work Description</th>
+            <th>Outcome</th>
+        </thead>
+        {% for session in sessions %}
+        <tbody>
+            <td>{{ session.session_date }}</td>
+            <td>{{ session.start_time }}</td>
+            <td>{{ session.end_time }}</td>
+            <td>{{ session.duration_minutes }}</td>
+            <td>{{ session.work_description }}</td>
+            <td>{{ session.outcome }}</td>
+        </tbody>
+        {% endfor %}
+    </table>
 
-</html>
+    {% else %}
+        <p>Create a new session</p>
+    {% endif %}
+</main>
+
+
+{% endblock content %}

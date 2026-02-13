@@ -1,9 +1,12 @@
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Edit Project</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='edit_project.css') }}">
-    </head>
+{% extends 'base.html' %}
+
+{% block title %}
+Edit Project
+{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='edit_project.css') }}">
+{% endblock css %}
+{% block content %}
     <body>
         <main class="form-container">
             <form class="form" action="/dashboard/edit/{{ project.id }}" method = "POST">
@@ -36,5 +39,6 @@
                 <input type="submit" value="Update Project">
             </form>
         </main>
-    </body>
+{% endblock %}
+</body>
 </html>

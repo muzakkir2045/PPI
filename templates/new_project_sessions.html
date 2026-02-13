@@ -1,10 +1,12 @@
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New work session</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='new_project_sessions.css') }}">
-    </head>
-    <body>
+{% extends 'base.html' %}
+
+{% block title %}
+New work Session
+{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='new_project_sessions.css') }}">
+{% endblock css %}
+{% block content %}
         <main class="form-container">
             <form class="form" action="/projects/{{ project_id }}/new_session" method="POST">
             <label for="session-date">Session Date</label>
@@ -25,5 +27,4 @@
             <input type="submit" value="Submit">
             </form>
         </main>
-    </body>
-</html>
+{% endblock %}

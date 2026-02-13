@@ -3,8 +3,8 @@ from flask import Flask, render_template, redirect, request, session, url_for, a
 from flask_login import LoginManager, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
-from app.metrics import insights_analyzer
-from app.models import db, Users, Projects, WorkSession
+from metrics import insights_analyzer
+from models import db, Users, Projects, WorkSession
 from dotenv import load_dotenv
 import os
 
@@ -31,7 +31,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 db.init_app(app)
-app.debug = False
+app.debug = True
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
