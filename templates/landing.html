@@ -34,6 +34,7 @@
 <section class="what-it-does">
     <div class="container">
         <h2>Built for structured self-analysis.</h2>
+        <div class="section-divider"></div>
         <div class="feature-grid">
             <div class="feature-card">
                 <h3>Session-Based Tracking</h3>
@@ -66,37 +67,77 @@
     </div>
 </section>
 
-<section class="screenshot-section">
-    <div class="container">
-        <h2>See the structure.</h2>
-        <div class="screenshot-wrapper">
-            <!-- Replace with actual screenshot -->
-            <div class="screenshot-placeholder">
-                [Screenshot: Dashboard → Project Sessions → Insights]
-            </div>
-        </div>
-        <p class="screenshot-caption">
-            Projects → Sessions → Insight Block<br>
-            A simple system designed to reveal behavioral patterns, not just numbers.
-        </p>
+<!-- Structure / Screenshots Section -->
+<section class="structure-section" id="how-it-works">
+  <h2>How It Works</h2>
+  <p class="lead">From overview to insight — in three simple steps.</p>
+
+  <div class="screenshots-wide-flow">
+    <!-- 1. Dashboard -->
+    <div class="screenshot-wide-step">
+      <p class="screenshot-caption">
+        <strong>1. Your projects at a glance</strong><br>
+        Create, view, and manage projects. Click any to start logging sessions.
+      </p>
+      <img src="{{ url_for('static', filename='images/dashboard-overview.png') }}" 
+           alt="PPI Dashboard showing multiple project cards" class="screenshot-wide">
     </div>
+
+    <!-- 2. Sessions table -->
+    <div class="screenshot-wide-step">
+      <img src="{{ url_for('static', filename='images/sessions.png') }}" 
+           alt="Sessions list with time, description, and outcomes" class="screenshot-wide">
+      <p class="screenshot-caption">
+        <strong>2. Log sessions quickly</strong><br>
+        Record time spent, what you did, and what you achieved — no fluff.
+      </p>
+    </div>
+
+    <!-- 3. Insights + Recommendation -->
+    <div class="screenshot-wide-step">
+      <p class="screenshot-caption">
+        <strong>3. One clear insight + recommendation</strong><br>
+        See patterns in your work style — get one focused suggestion, no noise.
+      </p>
+      <img src="{{ url_for('static', filename='images/insights-recommendation.png') }}" 
+           alt="Insights and single focused recommendation" class="screenshot-wide">
+    </div>
+  </div>
 </section>
 
 <section class="who-its-for">
-    <div class="container">
-        <h2>Who this is for</h2>
-        <div class="content-block">
-            <p>
-                Built for people who care about how they work — not just how long they work.
-            </p>
-            <p>
-                If you want to understand whether deep work sessions or shorter focused bursts create better outcomes for you, this tool gives you structured, rule-based insight.
-            </p>
-            <p>
-                Currently free and running in single-user mode. Authentication and private data saving are being expanded.
-            </p>
+  <div class="container">
+    <h2>Who this is for</h2>
+    
+    <div class="who-grid">
+      <!-- Left: Text -->
+      <div class="who-text">
+        <p>Built for people who care about <strong>how</strong> they work — not just how <em>long</em> they work.</p>
+        <p>If you want to understand whether deep work sessions or shorter focused bursts create better outcomes for you, this tool gives you structured, rule-based insight — no fluff, no dashboards full of noise.</p>
+        <p>Perfect if you're a developer, writer, researcher, freelancer, or anyone who wants honest patterns from their own data.</p>
+      </div>
+      
+      <!-- Right: Minimal visual grid (icons or simple illustrations) -->
+      <div class="who-visuals">
+        <div class="visual-item">
+          <img src="{{ url_for('static', filename='icons/code.svg') }}" alt="Developer" class="visual-icon">
+          <p>Developers & engineers</p>
         </div>
+        <div class="visual-item">
+          <img src="{{ url_for('static', filename='icons/write.svg') }}" alt="Writer" class="visual-icon">
+          <p>Writers & creators</p>
+        </div>
+        <div class="visual-item">
+          <img src="{{ url_for('static', filename='icons/research.svg') }}" alt="Researcher" class="visual-icon">
+          <p>Researchers & learners</p>
+        </div>
+        <div class="visual-item">
+          <img src="{{ url_for('static', filename='icons/freelance.svg') }}" alt="Freelancer" class="visual-icon">
+          <p>Freelancers & solopreneurs</p>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <section class="final-cta">
