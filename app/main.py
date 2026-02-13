@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, request, session, url_for, a
 from flask_login import LoginManager, login_user, logout_user, login_required,current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
+from flask_migrate import Migrate
 from app.metrics import insights_analyzer
 from app.models import db, Users, Projects, WorkSession
 from dotenv import load_dotenv
@@ -22,22 +23,27 @@ app = Flask(
     instance_relative_config=True )
 database_url = os.getenv("DATABASE_URL")
 if not database_url:
-    database_url = "sqlite:///" + os.path.join(BASE_DIR, "instance/database.db")
+    database_url = "sqlite:///" + os.path.join(INSTANCE_PATH, "database.db")
+
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+if database_url.startswith("postgresql://") and "sslmode" not in database_url:
+    database_url += "?sslmode=require"
+
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 db.init_app(app)
+migrate = Migrate(app, db)
+
 app.debug = False
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-with app.app_context():
-    db.create_all()
 
 @login_manager.user_loader
 def load_user(user_id):
