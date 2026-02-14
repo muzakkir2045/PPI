@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from flask_migrate import Migrate
 from app.metrics import insights_analyzer
 from app.models import db, Users, Projects, WorkSession
+from app.utils import  is_valid_username ,is_strong_password
 from dotenv import load_dotenv
 import os
 
@@ -207,13 +208,17 @@ def register():
 
         if Users.query.filter_by(username = username).first():
             return render_template('register.html', error = "Username already taken")
-        
+        user_success , user_msg = is_valid_username(username)
+        pass_success , pass_msg = is_strong_password(password)
+        if not user_success or not pass_success:
+            return render_template('register.html',username_error = user_msg, password_error = pass_msg)
+
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         new_user = Users(username = username, password = hashed_password)
 
         db.session.add(new_user)
         db.session.commit()
-        return render_template('login.html')
+        return redirect(url_for('login'))
     return render_template('register.html')
 
 
@@ -235,6 +240,66 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("landing"))
+
+
+@app.route('/work_sessions/edit/<int:project_id>/<int:session_id>',methods = ['GET','POST'])
+@login_required
+def edit_session(project_id,session_id):
+    session = WorkSession.query.filter_by(
+        id = session_id,
+        user_id = current_user.id,
+        project_id = project_id
+    ).first_or_404()
+
+    if request.method == 'POST':
+        session_date = datetime.strptime(
+            request.form["session-date"], "%Y-%m-%d"
+        ).date()
+
+        start_t = datetime.strptime(
+            request.form["start_time"], "%H:%M"
+        ).time()
+
+        end_t = datetime.strptime(
+            request.form["end_time"], "%H:%M"
+        ).time()
+
+
+        start_dt = datetime.combine(session_date, start_t)
+        end_dt   = datetime.combine(session_date, end_t)
+
+        if end_dt <= start_dt:
+            end_dt += timedelta(days=1)
+
+        duration_minutes = int(
+            (end_dt - start_dt).total_seconds() / 60
+        )
+        session.user_id = current_user.id 
+        session.project_id = project_id
+        session.session_date = session_date
+        session.start_time = start_dt
+        session.end_time = end_dt,
+        session.duration_minutes = duration_minutes
+        session.work_description = request.form.get('work_description').strip()
+        session.outcome = request.form.get('outcome').strip()
+
+        db.session.commit()
+        return redirect('/work_sessions', project_id = project_id)
+    return render_template('edit_session.html', session = session)
+
+@app.route('/work_sessions/delete/<int:project_id>/<int:session_id>', methods = ['POST'])
+@login_required
+def delete_session(project_id,session_id):
+    session = WorkSession.query.filter_by(
+        id = session_id,
+        user_id = current_user.id,
+        project_id = project_id
+    ).first_or_404()
+
+    db.session.delete(session)
+    db.session.commit()
+    return redirect('/work_sessions',project_id = project_id)
+
 
 @app.before_request
 def make_session_permanent():
