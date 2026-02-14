@@ -284,7 +284,7 @@ def edit_session(project_id,session_id):
         session.outcome = request.form.get('outcome').strip()
 
         db.session.commit()
-        return redirect('/work_sessions', project_id = project_id)
+        return redirect(url_for('work_sessions', project_id=project_id))
     return render_template('edit_session.html', session = session)
 
 @app.route('/work_sessions/delete/<int:project_id>/<int:session_id>', methods = ['POST'])
@@ -298,7 +298,7 @@ def delete_session(project_id,session_id):
 
     db.session.delete(session)
     db.session.commit()
-    return redirect('/work_sessions',project_id = project_id)
+    return redirect(url_for('work_sessions',project_id = project_id))
 
 
 @app.before_request

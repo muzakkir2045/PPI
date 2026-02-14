@@ -19,8 +19,78 @@ body {
     margin-bottom: 8px;
 }
 
+
+
+
+
+
+
+.actions-cell {
+    white-space: nowrap;
+    text-align: center;
+    padding: 8px 12px !important;
+    min-width: 140px;
+}
+
+.actions-cell .btn {
+    display: inline-block;
+    min-width: 64px;
+    padding: 6px 12px;
+    margin: 0 4px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.15s ease;
+    vertical-align: middle;
+}
+
+.btn-edit {
+    color: #1e40af;
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.btn-edit:hover,
+.btn-edit:focus-visible {
+    background: #bfdbfe;
+    border-color: #60a5fa;
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.18);
+}
+
+.btn-delete {
+    color: white;
+    background: #dc2626;
+    border-color: #b91c1c;
+}
+
+.btn-delete:hover,
+.btn-delete:focus-visible {
+    background: #b91c1c;
+    border-color: #991b1b;
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* Make delete slightly more prominent */
+.btn-delete {
+    font-weight: 550;
+}
+
+.delete-form {
+    padding-top: 16px; 
+    display: inline-block;
+    margin-right: 12px;
+}
+
+
 /* ---------- Buttons (top actions) ---------- */
-form {
+.top-form {
     padding-top: 16px; 
     padding-left: 32px;
     display: inline-block;
@@ -57,16 +127,18 @@ button {
 
 /* ---------- Main layout ---------- */
 main {
-    padding-top: 32px; 
+    padding-top: 32px;
     display: grid;
-    grid-template-columns: 450px 1fr;
+    grid-template-columns: minmax(250px, 450px) 1fr; /* left panel flexible */
     gap: 32px;
-    max-width: 1700px;
+    width: 100%;
+    max-width: 1920px; /* wider max-width to allow table expansion */
     margin: 28px auto;
     padding-left: 32px;
     padding-right: 32px;
     align-items: start;
 }
+
 
 /* ---------- Summary block ---------- */
 .summary {
@@ -137,15 +209,21 @@ article p {
 
 /* ---------- Table ---------- */
 .sessions-table {
-    overflow-x: auto;
-    width: 100%;
-    table-layout: fixed;
+    width: 100%; /* fill container */
+    table-layout: auto; /* let columns expand according to content */
     border-collapse: collapse;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    align-self: start;
+    overflow-x: auto; 
 }
+
+.sessions-table th:nth-child(2), /* Start Time */
+.sessions-table th:nth-child(3), /* End Time */
+.sessions-table th:nth-child(4)  /* Duration */ {
+    min-width: 120px;
+}
+
 
 .sessions-table thead {
     background: #f3f4f6;
@@ -163,7 +241,7 @@ article p {
 }
 
 .sessions-table td {
-    padding: 14px 16px;
+    padding: 10px 12px;
     font-size: 14px;
     line-height: 1.5;
     overflow: hidden;
@@ -190,7 +268,7 @@ p {
     .sessions-table {
         display: block;
         overflow-x: auto;
-        white-space: nowrap;
+        white-space: normal;
     }
 }
 

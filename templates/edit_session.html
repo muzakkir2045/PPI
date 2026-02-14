@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+New work Session
+{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='edit_session.css') }}">
+{% endblock css %}
+{% block content %}
+        <main class="form-container">
+            <form class="form" action="/work_sessions/edit/{{ session.project_id }}/{{ session.id }}" method="POST">
+                <label for="session-date">Session Date</label>
+                <input type="date" name="session-date" value="{{ session.session_date.strftime('%Y-%m-%d') }}"><br>
+
+                <label for="start_time">Start Time</label>
+                <input type="time" name="start_time" value="{{ session.start_time.strftime('%H:%M') }}"><br>
+
+                <label for="end_time">End Time</label>
+                <input type="time" name="end_time" value="{{ session.end_time.strftime('%H:%M') }}"><br>
+
+                <label for="work_description">Output Desired</label>
+                <textarea name="work_description" cols="10">{{ session.work_description }}</textarea><br>
+
+                <label for="outcome">Output Produced</label><br>
+                <textarea name="outcome" cols="10">{{ session.outcome }}</textarea><br>
+
+                <input type="submit" value="Submit">
+            </form>
+        </main>
+{% endblock %}
