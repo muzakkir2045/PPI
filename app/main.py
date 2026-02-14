@@ -241,6 +241,66 @@ def logout():
     logout_user()
     return redirect(url_for("landing"))
 
+
+@app.route('/work_sessions/edit/<int:project_id>/<int:session_id>',methods = ['GET','POST'])
+@login_required
+def edit_session(project_id,session_id):
+    session = WorkSession.query.filter_by(
+        id = session_id,
+        user_id = current_user.id,
+        project_id = project_id
+    ).first_or_404()
+
+    if request.method == 'POST':
+        session_date = datetime.strptime(
+            request.form["session-date"], "%Y-%m-%d"
+        ).date()
+
+        start_t = datetime.strptime(
+            request.form["start_time"], "%H:%M"
+        ).time()
+
+        end_t = datetime.strptime(
+            request.form["end_time"], "%H:%M"
+        ).time()
+
+
+        start_dt = datetime.combine(session_date, start_t)
+        end_dt   = datetime.combine(session_date, end_t)
+
+        if end_dt <= start_dt:
+            end_dt += timedelta(days=1)
+
+        duration_minutes = int(
+            (end_dt - start_dt).total_seconds() / 60
+        )
+        session.user_id = current_user.id 
+        session.project_id = project_id
+        session.session_date = session_date
+        session.start_time = start_dt
+        session.end_time = end_dt,
+        session.duration_minutes = duration_minutes
+        session.work_description = request.form.get('work_description').strip()
+        session.outcome = request.form.get('outcome').strip()
+
+        db.session.commit()
+        return redirect('/work_sessions', project_id = project_id)
+    return render_template('edit_session.html', session = session)
+
+@app.route('/work_sessions/delete/<int:project_id>/<int:session_id>', methods = ['POST'])
+@login_required
+def delete_session(project_id,session_id):
+    session = WorkSession.query.filter_by(
+        id = session_id,
+        user_id = current_user.id,
+        project_id = project_id
+    ).first_or_404()
+
+    db.session.delete(session)
+    db.session.commit()
+    return redirect('/work_sessions',project_id = project_id)
+
+
 @app.before_request
 def make_session_permanent():
     session.permanent = True
