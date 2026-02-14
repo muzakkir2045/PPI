@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from flask_migrate import Migrate
 from app.metrics import insights_analyzer
 from app.models import db, Users, Projects, WorkSession
+from app.utils import  is_valid_username ,is_strong_password
 from dotenv import load_dotenv
 import os
 
@@ -207,13 +208,17 @@ def register():
 
         if Users.query.filter_by(username = username).first():
             return render_template('register.html', error = "Username already taken")
-        
+        user_success , user_msg = is_valid_username(username)
+        pass_success , pass_msg = is_strong_password(password)
+        if not user_success or not pass_success:
+            return render_template('register.html',username_error = user_msg, password_error = pass_msg)
+
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         new_user = Users(username = username, password = hashed_password)
 
         db.session.add(new_user)
         db.session.commit()
-        return render_template('login.html')
+        return redirect(url_for('login'))
     return render_template('register.html')
 
 

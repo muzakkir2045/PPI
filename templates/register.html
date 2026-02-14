@@ -1,12 +1,13 @@
-
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Register</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
-    </head>
-    <body>
-        <main class="form-container">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+</head>
+
+<body>
+    <main class="form-container">
 
         <h1 class="sign-up-header">Register</h1>
         {% if error %}
@@ -14,16 +15,48 @@
         {% endif %}
         <form class="register-form" action="/register" method="POST">
             <label for="username">Username</label>
-            <input type="text" name="username"><br>
+            <input type="text" name="username" id="username" required>
+
+            {% if username_error %}
+            <p class="error">{{ username_error }}</p>
+            {% endif %}
+
+            <div class="field-hint">
+                <p>Username must:</p>
+                <ul>
+                    <li>Be 4–20 characters long</li>
+                    <li>Use only lowercase letters, numbers, and underscores</li>
+                    <li>Not start or end with an underscore</li>
+                    <li>Not contain consecutive underscores</li>
+                </ul>
+            </div>
+
             <label for="password">Password</label>
-            <input type="password" name="password"><br>
+            <input type="password" name="password" id="password" required>
+
+            {% if password_error %}
+            <p class="error">{{ password_error }}</p>
+            {% endif %}
+
+            <div class="field-hint">
+                <p>Password must:</p>
+                <ul>
+                    <li>Be at least 8 characters long</li>
+                    <li>Include an uppercase letter</li>
+                    <li>Include a lowercase letter</li>
+                    <li>Include a number</li>
+                    <li>Include a special character</li>
+                </ul>
+            </div>
+
             <input class="register-btn" type="submit" value="sign up">
         </form>
         <div class="actions">
             <p>Already have an Account?</p>
             <a href="/login">Login</a>
         </div>
-        
-        </main>
-    </body>
+
+    </main>
+</body>
+
 </html>

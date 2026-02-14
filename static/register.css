@@ -15,6 +15,17 @@ body {
     padding: 20px;
 }
 
+.field-hint {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.error {
+    color: #d9534f;
+    font-size: 0.85rem;
+}
+
+
 /* Form Container */
 .form-container {
     background: #ffffff;
