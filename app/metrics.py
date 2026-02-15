@@ -148,14 +148,7 @@ def insights_analyzer(project_id, db, WorkSession):
         total_outcome_short / total_duration_short
         if total_duration_short > 0 else 0
     )
-    
-    # ============================================================================
-    # COMPLETE INSIGHTS LOGIC - REPLACE FROM "effective_buffer" ONWARDS
-    # ============================================================================
-
-    # Calculate outcome rate
     outcome_rate = outcome_exists / total_sessions if total_sessions > 0 else 0
-
     # Calculate variables needed for observation logic
     long_fail_diff = long_sessions_without_outcome - long_sessions_with_outcome
     short_fail_diff = short_sessions_without_outcome - short_sessions_with_outcome
@@ -166,13 +159,12 @@ def insights_analyzer(project_id, db, WorkSession):
         short_sessions_with_outcome / (short_sessions_with_outcome + short_sessions_without_outcome)
         if (short_sessions_with_outcome + short_sessions_without_outcome) > 0 else 0
     )
-
     long_outcome_rate = (
         long_sessions_with_outcome / (long_sessions_with_outcome + long_sessions_without_outcome)
         if (long_sessions_with_outcome + long_sessions_without_outcome) > 0 else 0
     )
 
-    # NEW METRICS: Average outcome quality (not per minute)
+    # New metrics: Average outcome quality (not per minute)
     avg_outcome_length_short = (
         total_outcome_short / short_sessions_with_outcome
         if short_sessions_with_outcome > 0 else 0
@@ -182,7 +174,6 @@ def insights_analyzer(project_id, db, WorkSession):
         total_outcome_long / long_sessions_with_outcome
         if long_sessions_with_outcome > 0 else 0
     )
-
     # Combined effectiveness: quality × reliability
     short_effectiveness = avg_outcome_length_short * short_outcome_rate
     long_effectiveness = avg_outcome_length_long * long_outcome_rate
@@ -197,11 +188,9 @@ def insights_analyzer(project_id, db, WorkSession):
     max_buffer = 0.20
     min_sessions_for_full = 12
     effective_buffer = max_buffer - (max_buffer - min_buffer) * min(1.0, total_sessions / min_sessions_for_full)
-
     # Thresholds
     quality_buffer = 15  # characters difference
     effectiveness_buffer = effective_buffer * 100  # scaled for effectiveness
-
     # --- EFFECTIVENESS MESSAGE ---
     if total_sessions < 3:
         summary_message = "Not enough data yet to identify patterns in session effectiveness."
@@ -219,7 +208,6 @@ def insights_analyzer(project_id, db, WorkSession):
         summary_message = "Shorter sessions produce richer outcomes, but longer sessions complete more reliably."
     else:
         summary_message = "Session length does not significantly affect outcome quality in this project."
-
     # --- RELIABILITY MESSAGE ---
     if total_sessions < 3:
         reliability_message = "Track a few more sessions to establish reliability patterns."
@@ -236,7 +224,6 @@ def insights_analyzer(project_id, db, WorkSession):
 
     # --- OBSERVATION MESSAGE ---
     observation_message = None
-
     if total_sessions < 3:
         observation_message = None
     elif long_fail_diff >= 2 and long_sessions_without_outcome > long_sessions_with_outcome:
