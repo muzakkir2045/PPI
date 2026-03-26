@@ -1,101 +1,117 @@
-# Personal Progress Intelligence
+# 🧠 Personal Progress Intelligence
 
-A Flask-based web application that helps you track work sessions, analyze productivity patterns, and gain actionable insights into your working habits.
+> **Most people don't know which of their work habits actually make them productive.**
+> PPI tracks your work sessions and tells you — with data, not guesses.
 
-## 🎯 Project Overview
+🔗 **[Live Demo](https://ppi-f69t.onrender.com)**
 
-Personal Progress Intelligence is a learning project that demonstrates full-stack web development with Python Flask. It allows users to create projects, log work sessions, and receive intelligent recommendations based on their productivity patterns.
+---
 
-The application analyzes your work habits by examining:
-- Session duration patterns
-- Outcome documentation consistency
-- Effectiveness of different session lengths
-- Productivity trends over time
+## What is PPI?
 
-## ✨ Features
+Personal Progress Intelligence is a full-stack Flask web app that lets you log work sessions across your projects and then analyzes your patterns to give you **personalized, data-driven productivity insights.**
 
-### Core Functionality
-- **User Authentication**: Secure registration and login system with password hashing
-- **Project Management**: Create, edit, delete, and track multiple projects
-- **Work Session Tracking**: Log detailed work sessions with:
-  - Date and time tracking
-  - Duration calculation
-  - Work description
-  - Session outcomes
-- **Intelligent Analytics**: Automated analysis of your productivity patterns
+Not generic tips. Insights based on *your* data — like:
+- *"Your 45–60 minute sessions consistently produce the best outcomes"*
+- *"Long sessions frequently end without documented results — try shorter sprints"*
+- *"You document outcomes only 40% of the time — this makes it harder to track progress"*
+
+---
+
+## Features
+
+### Core
+- **User Authentication** — Secure registration and login with PBKDF2-SHA256 password hashing
+- **Project Management** — Create, edit, and track multiple projects with status tracking
+- **Work Session Logging** — Log sessions with start/end time, duration, description, and outcome notes
 
 ### Smart Insights Engine
-The app provides personalized recommendations by analyzing:
-- **Effectiveness**: Which session lengths produce the best outcomes for you
-- **Reliability**: How consistently you document session outcomes
-- **Observations**: Patterns in your work habits (e.g., "Long sessions frequently end without concrete outcomes")
-- **Recommendations**: Actionable advice tailored to your data (e.g., "Try working in focused 45-60 minute sprints")
+The heart of PPI lives in `metrics.py`. It analyzes your session history and surfaces:
 
-## 🛠️ Tech Stack
+| Insight Type | What it tells you |
+|---|---|
+| **Effectiveness** | Which session lengths produce your best outcomes |
+| **Reliability** | How consistently you document what you achieved |
+| **Observations** | Patterns you wouldn't notice manually |
+| **Recommendations** | Specific, actionable next steps |
 
-**Backend:**
-- Flask (Web framework)
-- SQLAlchemy (ORM)
-- Flask-Login (Authentication)
-- Flask-Migrate (Database migrations)
+---
 
-**Database:**
-- SQLite (Development)
-- PostgreSQL (Production-ready)
+## Tech Stack
 
-**Security:**
-- Werkzeug password hashing (PBKDF2-SHA256)
-- Session management with secure cookies
+| Layer | Technology |
+|---|---|
+| Web Framework | Flask |
+| ORM | SQLAlchemy + Flask-Migrate |
+| Auth | Flask-Login + Werkzeug |
+| Database | SQLite (dev) / PostgreSQL (prod) |
+| Deployment | Render (auto-detects PostgreSQL, SSL configured) |
 
-## 📋 Prerequisites
+---
 
-- Python 3.8+
-- pip (Python package manager)
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 personal-progress-intelligence/
 │
 ├── app/
-│   ├── main.py          # Application routes and configuration
-│   ├── models.py        # Database models
-│   ├── metrics.py       # Analytics and insights engine
-│   └── utils.py         # Helper functions for validation
+│   ├── main.py        # Routes and app configuration
+│   ├── models.py      # User, Project, WorkSession models
+│   ├── metrics.py     # Analytics and insights engine ← the interesting part
+│   └── utils.py       # Input validation helpers
 │
-├── templates/           # HTML templates
-├── static/             # CSS, images
-├── instance/           # SQLite database (gitignored)
-├── .env               # Environment variables (gitignored)
-└── README.md
+├── templates/         # Jinja2 HTML templates
+├── static/            # CSS and assets
+├── migrations/        # Flask-Migrate database migrations
+└── .env               # Environment variables (gitignored)
 ```
 
-## 💡 How It Works
+---
 
-### Data Models
+## Getting Started
 
-**Users**: Stores user credentials and authentication data
-**Projects**: Represents individual projects with title, description, and status
-**WorkSession**: Detailed records of work sessions including:
-- Session timing (date, start, end)
-- Duration in minutes
-- Work description
-- Outcome documentation
+```bash
+git clone https://github.com/muzakkir2045/PPI.git
+cd PPI
+pip install -r requirements.txt
+```
 
+Create a `.env` file:
+```
+SECRET_KEY=your_secret_key
+DATABASE_URL=sqlite:///instance/database.db   # or your PostgreSQL URL
+```
 
-## 🌐 Deployment
+Run the app:
+```bash
+flask db upgrade
+flask run
+```
 
-The app is configured for easy deployment to platforms like Heroku or Railway:
-- Automatically detects PostgreSQL databases
-- SSL mode configuration for production databases
-- Connection pooling with pre-ping health checks
+Visit `http://localhost:5000`
 
-## 🎓 Learning Outcomes
+---
 
-This project demonstrates:
-- RESTful API design principles
-- Database design and relationships (One-to-Many)
-- User authentication and session management
-- Data analysis and pattern recognition
-- Input validation and security best practices
-- Production-ready Flask application structure
+## How the Insights Engine Works
+
+The `WorkSession` model stores timing, description, and outcome for every session. `metrics.py` then:
+
+1. Groups sessions by duration bucket (short / medium / long)
+2. Scores each bucket by outcome documentation rate
+3. Compares effectiveness across session types
+4. Generates natural-language observations and recommendations
+
+This is the core value of PPI — not just storing data, but making it useful.
+
+---
+
+## Deployment
+
+Configured for Railway or Render:
+- Auto-detects `DATABASE_URL` for PostgreSQL
+- SSL mode enabled for production databases
+- SQLAlchemy connection pooling with pre-ping health checks
+
+---
+
+*Built with Flask, SQLAlchemy, and the genuine desire to understand my own productivity.*
