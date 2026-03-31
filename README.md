@@ -1,4 +1,4 @@
-# 🧠 Personal Progress Intelligence
+# 🧠 SessionIQ
 
 > **Most people don't know which of their work habits actually make them productive.**
 > PPI tracks your work sessions and tells you — with data, not guesses.
@@ -7,9 +7,9 @@
 
 ---
 
-## What is PPI?
+## What is SessionIQ?
 
-Personal Progress Intelligence is a full-stack Flask web app that lets you log work sessions across your projects and then analyzes your patterns to give you **personalized, data-driven productivity insights.**
+SessionIQ is a full-stack Flask web app that lets you log work sessions across your projects and then analyzes your patterns to give you **personalized, data-driven productivity insights.**
 
 Not generic tips. Insights based on *your* data — like:
 - *"Your 45–60 minute sessions consistently produce the best outcomes"*
@@ -26,7 +26,7 @@ Not generic tips. Insights based on *your* data — like:
 - **Work Session Logging** — Log sessions with start/end time, duration, description, and outcome notes
 
 ### Smart Insights Engine
-The heart of PPI lives in `metrics.py`. It analyzes your session history and surfaces:
+The heart of SessionIQ lives in `metrics.py`. It analyzes your session history and surfaces:
 
 | Insight Type | What it tells you |
 |---|---|
@@ -52,7 +52,7 @@ The heart of PPI lives in `metrics.py`. It analyzes your session history and sur
 ## Project Structure
 
 ```
-personal-progress-intelligence/
+SessionIQ/
 │
 ├── app/
 │   ├── main.py        # Routes and app configuration
@@ -71,8 +71,8 @@ personal-progress-intelligence/
 ## Getting Started
 
 ```bash
-git clone https://github.com/muzakkir2045/PPI.git
-cd PPI
+git clone https://github.com/muzakkir2045/SessionIQ.git
+cd SessionIQ
 pip install -r requirements.txt
 ```
 
@@ -101,7 +101,7 @@ The `WorkSession` model stores timing, description, and outcome for every sessio
 3. Compares effectiveness across session types
 4. Generates natural-language observations and recommendations
 
-This is the core value of PPI — not just storing data, but making it useful.
+This is the core value of SessionIQ — not just storing data, but making it useful.
 
 ---
 
