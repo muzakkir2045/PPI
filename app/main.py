@@ -221,8 +221,7 @@ def register():
 
         db.session.add(new_user)
         db.session.commit()
-        # return redirect(url_for('login'))
-        return f"{username} | {password}"
+        return redirect(url_for('login'))
     return render_template('register.html')
 
 
