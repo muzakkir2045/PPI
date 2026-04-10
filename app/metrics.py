@@ -53,7 +53,7 @@ def insights_analyzer(project_id, db, WorkSession):
         WorkSession.outcome != ''
     ).scalar() or 0
 
-
+    """No of long sessions with outcome"""
     long_sessions_with_outcome = (
         db.session.query(func.count(WorkSession.id))
         .filter(
@@ -65,6 +65,7 @@ def insights_analyzer(project_id, db, WorkSession):
         .scalar()
     ) or 0
 
+    """No of long sessions without outcome"""
     long_sessions_without_outcome = (
         db.session.query(func.count(WorkSession.id))
         .filter(
@@ -78,6 +79,7 @@ def insights_analyzer(project_id, db, WorkSession):
         .scalar()
     ) or 0
 
+    """No of Short sessions with outcome"""
     short_sessions_with_outcome = (
         db.session.query(func.count(WorkSession.id))
         .filter(
@@ -89,6 +91,7 @@ def insights_analyzer(project_id, db, WorkSession):
         .scalar()
     ) or 0
 
+    """No of Short sessions without outcome"""
     short_sessions_without_outcome = (
         db.session.query(func.count(WorkSession.id))
         .filter(
@@ -102,6 +105,8 @@ def insights_analyzer(project_id, db, WorkSession):
         .scalar()
     ) or 0
 
+
+    """Length of outcome of long sessions"""
     total_outcome_long = db.session.query(
         func.sum(func.length(WorkSession.outcome))
     ).filter(
@@ -111,6 +116,7 @@ def insights_analyzer(project_id, db, WorkSession):
         WorkSession.outcome != ''
     ).scalar() or 0
 
+    """total minutes of long sessions"""
     total_duration_long = db.session.query(
         func.sum(WorkSession.duration_minutes)
     ).filter(
