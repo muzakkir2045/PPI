@@ -43,7 +43,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 db.init_app(app)
 migrate = Migrate(app, db)
 
-app.debug = True
+app.debug = False
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
